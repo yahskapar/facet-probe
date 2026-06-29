@@ -1,0 +1,158 @@
+version: 1
+access_window: "2026-05-04 to 2026-05-25"
+generation_defaults:
+  temperature: 0
+  top_p: 1
+  seed: 42
+  k_orderings: 6
+
+models:
+  gemini-3.1-pro-preview:
+    display: Gemini-Pro 3.1
+    family: Gemini
+    cluster: frontier
+    provider: Google
+    api_model_id: gemini-3.1-pro-preview
+    max_output_tokens: 24576
+    thinking_budget: 8192
+    temperature: 0
+    top_p: 1
+
+  gemini-3-flash-preview:
+    display: Gemini-Flash 3
+    family: Gemini
+    cluster: frontier
+    provider: Google
+    api_model_id: gemini-3-flash-preview
+    max_output_tokens: 24576
+    thinking_budget: 8192
+    temperature: 0
+    top_p: 1
+
+  claude-opus-4-7:
+    display: Claude Opus 4.7
+    family: Claude
+    cluster: frontier
+    provider: Anthropic
+    api_model_id: claude-opus-4-7
+    max_output_tokens: 8192
+    note: Anthropic/OpenAI reasoning APIs rejected temperature=0 in this run.
+
+  claude-sonnet-4-6:
+    display: Claude Sonnet 4.6
+    family: Claude
+    cluster: frontier
+    provider: Anthropic
+    api_model_id: claude-sonnet-4-6
+    max_output_tokens: 8192
+    note: Anthropic/OpenAI reasoning APIs rejected temperature=0 in this run.
+
+  gpt-5-5:
+    display: ChatGPT 5.5
+    family: ChatGPT
+    cluster: frontier
+    provider: OpenAI
+    api_model_id: gpt-5-5
+    max_output_tokens: 8192
+    reasoning_effort: medium
+    note: Anthropic/OpenAI reasoning APIs rejected temperature=0 in this run.
+
+  gpt-5-4-mini:
+    display: ChatGPT 5.4-mini
+    family: ChatGPT
+    cluster: frontier
+    provider: OpenAI
+    api_model_id: gpt-5-4-mini
+    max_output_tokens: 8192
+    reasoning_effort: medium
+    note: Anthropic/OpenAI reasoning APIs rejected temperature=0 in this run.
+
+  qwen3-5-0-8b:
+    display: Qwen3.5-VL 0.8B
+    family: Qwen3.5-VL
+    cluster: open_weight
+    hf_repo: Qwen/Qwen3.5-VL-0.8B-Instruct
+    dtype: bfloat16
+
+  qwen3-5-2b:
+    display: Qwen3.5-VL 2B
+    family: Qwen3.5-VL
+    cluster: open_weight
+    hf_repo: Qwen/Qwen3.5-VL-2B-Instruct
+    dtype: bfloat16
+
+  qwen3-5-4b:
+    display: Qwen3.5-VL 4B
+    family: Qwen3.5-VL
+    cluster: open_weight
+    hf_repo: Qwen/Qwen3.5-VL-4B-Instruct
+    dtype: bfloat16
+
+  qwen3-5-9b:
+    display: Qwen3.5-VL 9B
+    family: Qwen3.5-VL
+    cluster: open_weight
+    hf_repo: Qwen/Qwen3.5-VL-9B-Instruct
+    dtype: bfloat16
+
+  qwen3-5-27b:
+    display: Qwen3.5-VL 27B
+    family: Qwen3.5-VL
+    cluster: open_weight
+    hf_repo: Qwen/Qwen3.5-VL-27B-Instruct
+    dtype: bfloat16
+    load_in_4bit: true
+
+  internvl3-5-4b:
+    display: InternVL3.5 4B
+    family: InternVL3.5
+    cluster: open_weight
+    hf_repo: OpenGVLab/InternVL3.5-4B
+    dtype: bfloat16
+    load_in_4bit: true
+
+  internvl3-5-8b:
+    display: InternVL3.5 8B
+    family: InternVL3.5
+    cluster: open_weight
+    hf_repo: OpenGVLab/InternVL3.5-8B
+    dtype: bfloat16
+    load_in_4bit: true
+
+  internvl3-5-14b:
+    display: InternVL3.5 14B
+    family: InternVL3.5
+    cluster: open_weight
+    hf_repo: OpenGVLab/InternVL3.5-14B
+    dtype: bfloat16
+    load_in_4bit: true
+
+  internvl3-5-38b:
+    display: InternVL3.5 38B
+    family: InternVL3.5
+    cluster: open_weight
+    hf_repo: OpenGVLab/InternVL3.5-38B
+    dtype: bfloat16
+    load_in_4bit: true
+
+  kimi-vl-a3b-instruct:
+    display: Kimi-VL-A3B-Instruct
+    family: Kimi-VL
+    cluster: open_weight
+    hf_repo: moonshotai/Kimi-VL-A3B-Instruct
+    dtype: bfloat16
+
+  medgemma-4b-it:
+    display: MedGemma 4B-IT
+    family: MedGemma
+    cluster: open_weight
+    hf_repo: google/medgemma-4b-it
+    dtype: bfloat16
+
+  medgemma-27b-it:
+    display: MedGemma 27B-IT
+    family: MedGemma
+    cluster: open_weight
+    hf_repo: google/medgemma-27b-it
+    dtype: bfloat16
+    load_in_4bit: true

@@ -1,0 +1,4 @@
+{"facet":"option_order","dataset":"toy","model":"toy-model","item_id":"toy::1","ordering_idx":0,"permutation":[0,1,2],"answer_normalized":"choice-a","correct":true}
+{"facet":"option_order","dataset":"toy","model":"toy-model","item_id":"toy::1","ordering_idx":1,"permutation":[1,0,2],"answer_normalized":"choice-b","correct":false}
+{"facet":"option_order","dataset":"toy","model":"toy-model","item_id":"toy::2","ordering_idx":0,"permutation":[0,1],"answer_normalized":"choice-a","correct":true}
+{"facet":"option_order","dataset":"toy","model":"toy-model","item_id":"toy::2","ordering_idx":1,"permutation":[1,0],"answer_normalized":"choice-a","correct":true}

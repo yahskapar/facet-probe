@@ -1,0 +1,852 @@
+{
+  "facet_means": {
+    "document_rank_order": 0.26114872011574225,
+    "evidence_chunk_order": 0.40562748961061834,
+    "image_set_order_screened": 0.2435185185185185,
+    "mean5": 0.35404413083416103,
+    "mixed_modality_order": 0.4968703703703704,
+    "option_order": 0.3630555555555556
+  },
+  "image_rates": {
+    "claude-opus-4-7": {
+      "mantis_eval": {
+        "k6_flip_rate": 0.05555555555555555,
+        "n_raw_in_file": 70,
+        "n_screened": 18,
+        "source": "EMNLP_2026/MMIOS/results/experiments/api_full_claude-opus-4-7_2026-05-14_15-46-32_2026-05-14_15-46-33/inference/image_set_order__mantis_eval__claude-opus-4-7.jsonl"
+      },
+      "mean": {
+        "k6_flip_rate": 0.1252136752136752,
+        "note": "cell-equal mean of screened Mantis-Eval and screened MedFrameQA"
+      },
+      "medframeqa": {
+        "k6_flip_rate": 0.19487179487179487,
+        "n_raw_in_file": 200,
+        "n_screened": 195,
+        "source": "EMNLP_2026/MMIOS/results/experiments/api_full_claude-opus-4-7_2026-05-14_15-46-32_2026-05-14_15-46-33/inference/image_set_order__medframeqa__claude-opus-4-7.jsonl"
+      }
+    },
+    "claude-sonnet-4-6": {
+      "mantis_eval": {
+        "k6_flip_rate": 0.2222222222222222,
+        "n_raw_in_file": 70,
+        "n_screened": 18,
+        "source": "EMNLP_2026/MMIOS/results/experiments/api_full_claude-sonnet-4-6_2026-05-14_16-36-00_2026-05-14_16-36-00/inference/image_set_order__mantis_eval__claude-sonnet-4-6.jsonl"
+      },
+      "mean": {
+        "k6_flip_rate": 0.2111111111111111,
+        "note": "cell-equal mean of screened Mantis-Eval and screened MedFrameQA"
+      },
+      "medframeqa": {
+        "k6_flip_rate": 0.2,
+        "n_raw_in_file": 200,
+        "n_screened": 195,
+        "source": "EMNLP_2026/MMIOS/results/experiments/api_full_claude-sonnet-4-6_2026-05-14_16-36-00_2026-05-14_16-36-00/inference/image_set_order__medframeqa__claude-sonnet-4-6.jsonl"
+      }
+    },
+    "gemini-3-flash-preview": {
+      "mantis_eval": {
+        "k6_flip_rate": 0.0,
+        "n_raw_in_file": 70,
+        "n_screened": 18,
+        "source": "EMNLP_2026/MMIOS/results/experiments/facet_panel_flash_backfill_2026-05-12_17-01-58_2026-05-12_17-01-59/inference/image_set_order__mantis_eval__gemini-3-flash-preview.jsonl"
+      },
+      "mean": {
+        "k6_flip_rate": 0.14102564102564102,
+        "note": "cell-equal mean of screened Mantis-Eval and screened MedFrameQA"
+      },
+      "medframeqa": {
+        "k6_flip_rate": 0.28205128205128205,
+        "n_raw_in_file": 200,
+        "n_screened": 195,
+        "source": "EMNLP_2026/MMIOS/results/experiments/facet_panel_flash_n200_2026-05-10_16-01-30/inference/image_set_order__medframeqa__gemini-3-flash-preview.jsonl"
+      }
+    },
+    "gemini-3.1-pro-preview": {
+      "mantis_eval": {
+        "k6_flip_rate": 0.0,
+        "n_raw_in_file": 70,
+        "n_screened": 18,
+        "source": "EMNLP_2026/MMIOS/results/experiments/facet_panel_pro_backfill_2026-05-12_17-01-56_2026-05-12_17-01-57/inference/image_set_order__mantis_eval__gemini-3.1-pro-preview.jsonl"
+      },
+      "mean": {
+        "k6_flip_rate": 0.10256410256410256,
+        "note": "cell-equal mean of screened Mantis-Eval and screened MedFrameQA"
+      },
+      "medframeqa": {
+        "k6_flip_rate": 0.20512820512820512,
+        "n_raw_in_file": 200,
+        "n_screened": 195,
+        "source": "EMNLP_2026/MMIOS/results/experiments/facet_panel_pro_n200_2026-05-10_16-01-25/inference/image_set_order__medframeqa__gemini-3.1-pro-preview.jsonl"
+      }
+    },
+    "gpt-5-4-mini": {
+      "mantis_eval": {
+        "k6_flip_rate": 0.2777777777777778,
+        "n_raw_in_file": 70,
+        "n_screened": 18,
+        "source": "EMNLP_2026/MMIOS/results/experiments/api_full_gpt-5-4-mini_2026-05-14_16-36-06_2026-05-14_16-36-06/inference/image_set_order__mantis_eval__gpt-5-4-mini.jsonl"
+      },
+      "mean": {
+        "k6_flip_rate": 0.3055555555555556,
+        "note": "cell-equal mean of screened Mantis-Eval and screened MedFrameQA"
+      },
+      "medframeqa": {
+        "k6_flip_rate": 0.3333333333333333,
+        "n_raw_in_file": 200,
+        "n_screened": 195,
+        "source": "EMNLP_2026/MMIOS/results/experiments/api_full_gpt-5-4-mini_2026-05-14_16-36-06_2026-05-14_16-36-06/inference/image_set_order__medframeqa__gpt-5-4-mini.jsonl"
+      }
+    },
+    "gpt-5-5": {
+      "mantis_eval": {
+        "k6_flip_rate": 0.05555555555555555,
+        "n_raw_in_file": 70,
+        "n_screened": 18,
+        "source": "EMNLP_2026/MMIOS/results/experiments/api_full_gpt-5-5_2026-05-14_16-36-03_2026-05-14_16-36-03/inference/image_set_order__mantis_eval__gpt-5-5.jsonl"
+      },
+      "mean": {
+        "k6_flip_rate": 0.1457264957264957,
+        "note": "cell-equal mean of screened Mantis-Eval and screened MedFrameQA"
+      },
+      "medframeqa": {
+        "k6_flip_rate": 0.2358974358974359,
+        "n_raw_in_file": 200,
+        "n_screened": 195,
+        "source": "EMNLP_2026/MMIOS/results/experiments/api_full_gpt-5-5_2026-05-14_16-36-03_2026-05-14_16-36-03/inference/image_set_order__medframeqa__gpt-5-5.jsonl"
+      }
+    },
+    "internvl3-5-14b": {
+      "mantis_eval": {
+        "k6_flip_rate": 0.3888888888888889,
+        "n_raw_in_file": 70,
+        "n_screened": 18,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_panel_internvl3-5-14b_n200_2026-05-17_09-23-06/inference/image_set_order__mantis_eval__internvl3-5-14b.jsonl"
+      },
+      "mean": {
+        "k6_flip_rate": 0.25598290598290596,
+        "note": "cell-equal mean of screened Mantis-Eval and screened MedFrameQA"
+      },
+      "medframeqa": {
+        "k6_flip_rate": 0.12307692307692308,
+        "n_raw_in_file": 200,
+        "n_screened": 195,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_panel_internvl3-5-14b_n200_2026-05-17_09-23-06/inference/image_set_order__medframeqa__internvl3-5-14b.jsonl"
+      }
+    },
+    "internvl3-5-38b": {
+      "mantis_eval": {
+        "k6_flip_rate": 0.3333333333333333,
+        "n_raw_in_file": 70,
+        "n_screened": 18,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_panel_internvl3-5-38b_n200_2026-05-18_12-39-55/inference/image_set_order__mantis_eval__internvl3-5-38b.jsonl"
+      },
+      "mean": {
+        "k6_flip_rate": 0.25384615384615383,
+        "note": "cell-equal mean of screened Mantis-Eval and screened MedFrameQA"
+      },
+      "medframeqa": {
+        "k6_flip_rate": 0.17435897435897435,
+        "n_raw_in_file": 200,
+        "n_screened": 195,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_panel_internvl3-5-38b_n200_2026-05-18_12-39-55/inference/image_set_order__medframeqa__internvl3-5-38b.jsonl"
+      }
+    },
+    "internvl3-5-4b": {
+      "mantis_eval": {
+        "k6_flip_rate": 0.2777777777777778,
+        "n_raw_in_file": 70,
+        "n_screened": 18,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_panel_internvl3-5-4b_n200_2026-05-16_23-22-44/inference/image_set_order__mantis_eval__internvl3-5-4b.jsonl"
+      },
+      "mean": {
+        "k6_flip_rate": 0.2311965811965812,
+        "note": "cell-equal mean of screened Mantis-Eval and screened MedFrameQA"
+      },
+      "medframeqa": {
+        "k6_flip_rate": 0.18461538461538463,
+        "n_raw_in_file": 200,
+        "n_screened": 195,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_panel_internvl3-5-4b_n200_2026-05-16_23-22-44/inference/image_set_order__medframeqa__internvl3-5-4b.jsonl"
+      }
+    },
+    "internvl3-5-8b": {
+      "mantis_eval": {
+        "k6_flip_rate": 0.3888888888888889,
+        "n_raw_in_file": 70,
+        "n_screened": 18,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_panel_internvl3-5-8b_n200_2026-05-17_04-17-13/inference/image_set_order__mantis_eval__internvl3-5-8b.jsonl"
+      },
+      "mean": {
+        "k6_flip_rate": 0.3252136752136752,
+        "note": "cell-equal mean of screened Mantis-Eval and screened MedFrameQA"
+      },
+      "medframeqa": {
+        "k6_flip_rate": 0.26153846153846155,
+        "n_raw_in_file": 200,
+        "n_screened": 195,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_panel_internvl3-5-8b_n200_2026-05-17_04-17-13/inference/image_set_order__medframeqa__internvl3-5-8b.jsonl"
+      }
+    },
+    "kimi-vl-a3b-instruct": {
+      "mantis_eval": {
+        "k6_flip_rate": 0.2222222222222222,
+        "n_raw_in_file": 70,
+        "n_screened": 18,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_panel_kimi-vl-a3b-instruct_n200_2026-05-16_03-35-39/inference/image_set_order__mantis_eval__kimi-vl-a3b-instruct.jsonl"
+      },
+      "mean": {
+        "k6_flip_rate": 0.1829059829059829,
+        "note": "cell-equal mean of screened Mantis-Eval and screened MedFrameQA"
+      },
+      "medframeqa": {
+        "k6_flip_rate": 0.14358974358974358,
+        "n_raw_in_file": 200,
+        "n_screened": 195,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_panel_kimi-vl-a3b-instruct_n200_2026-05-16_03-35-39/inference/image_set_order__medframeqa__kimi-vl-a3b-instruct.jsonl"
+      }
+    },
+    "medgemma-27b-it": {
+      "mantis_eval": {
+        "k6_flip_rate": 0.2777777777777778,
+        "n_raw_in_file": 70,
+        "n_screened": 18,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_panel_medgemma-27b-it_n200_2026-05-18_00-51-53/inference/image_set_order__mantis_eval__medgemma-27b-it.jsonl"
+      },
+      "mean": {
+        "k6_flip_rate": 0.19273504273504274,
+        "note": "cell-equal mean of screened Mantis-Eval and screened MedFrameQA"
+      },
+      "medframeqa": {
+        "k6_flip_rate": 0.1076923076923077,
+        "n_raw_in_file": 200,
+        "n_screened": 195,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_panel_medgemma-27b-it_n200_2026-05-18_00-51-53/inference/image_set_order__medframeqa__medgemma-27b-it.jsonl"
+      }
+    },
+    "medgemma-4b-it": {
+      "mantis_eval": {
+        "k6_flip_rate": 0.2222222222222222,
+        "n_raw_in_file": 70,
+        "n_screened": 18,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_full_medgemma-4b-it_2026-05-13_00-03-13_2026-05-13_00-03-14/inference/image_set_order__mantis_eval__medgemma-4b-it.jsonl"
+      },
+      "mean": {
+        "k6_flip_rate": 0.1905982905982906,
+        "note": "cell-equal mean of screened Mantis-Eval and screened MedFrameQA"
+      },
+      "medframeqa": {
+        "k6_flip_rate": 0.15897435897435896,
+        "n_raw_in_file": 200,
+        "n_screened": 195,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_full_medgemma-4b-it_2026-05-13_00-03-13_2026-05-13_00-03-14/inference/image_set_order__medframeqa__medgemma-4b-it.jsonl"
+      }
+    },
+    "qwen3-5-0-8b": {
+      "mantis_eval": {
+        "k6_flip_rate": 0.3888888888888889,
+        "n_raw_in_file": 70,
+        "n_screened": 18,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_panel_qwen3-5-0-8b_n200_2026-05-15_19-32-31/inference/image_set_order__mantis_eval__qwen3-5-0-8b.jsonl"
+      },
+      "mean": {
+        "k6_flip_rate": 0.3482905982905983,
+        "note": "cell-equal mean of screened Mantis-Eval and screened MedFrameQA"
+      },
+      "medframeqa": {
+        "k6_flip_rate": 0.3076923076923077,
+        "n_raw_in_file": 200,
+        "n_screened": 195,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_panel_qwen3-5-0-8b_n200_2026-05-15_19-32-31/inference/image_set_order__medframeqa__qwen3-5-0-8b.jsonl"
+      }
+    },
+    "qwen3-5-27b": {
+      "mantis_eval": {
+        "k6_flip_rate": 0.2222222222222222,
+        "n_raw_in_file": 70,
+        "n_screened": 18,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_panel_qwen3-5-27b_n200_2026-05-16_05-34-55/inference/image_set_order__mantis_eval__qwen3-5-27b.jsonl"
+      },
+      "mean": {
+        "k6_flip_rate": 0.26495726495726496,
+        "note": "cell-equal mean of screened Mantis-Eval and screened MedFrameQA"
+      },
+      "medframeqa": {
+        "k6_flip_rate": 0.3076923076923077,
+        "n_raw_in_file": 200,
+        "n_screened": 195,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_panel_qwen3-5-27b_n200_2026-05-16_05-34-55/inference/image_set_order__medframeqa__qwen3-5-27b.jsonl"
+      }
+    },
+    "qwen3-5-2b": {
+      "mantis_eval": {
+        "k6_flip_rate": 0.5,
+        "n_raw_in_file": 70,
+        "n_screened": 18,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_panel_qwen3-5-2b_n200_2026-05-15_21-02-32/inference/image_set_order__mantis_eval__qwen3-5-2b.jsonl"
+      },
+      "mean": {
+        "k6_flip_rate": 0.5756410256410256,
+        "note": "cell-equal mean of screened Mantis-Eval and screened MedFrameQA"
+      },
+      "medframeqa": {
+        "k6_flip_rate": 0.6512820512820513,
+        "n_raw_in_file": 200,
+        "n_screened": 195,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_panel_qwen3-5-2b_n200_2026-05-15_21-02-32/inference/image_set_order__medframeqa__qwen3-5-2b.jsonl"
+      }
+    },
+    "qwen3-5-4b": {
+      "mantis_eval": {
+        "k6_flip_rate": 0.3888888888888889,
+        "n_raw_in_file": 70,
+        "n_screened": 18,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_panel_qwen3-5-4b_n200_2026-05-16_00-18-50/inference/image_set_order__mantis_eval__qwen3-5-4b.jsonl"
+      },
+      "mean": {
+        "k6_flip_rate": 0.3277777777777778,
+        "note": "cell-equal mean of screened Mantis-Eval and screened MedFrameQA"
+      },
+      "medframeqa": {
+        "k6_flip_rate": 0.26666666666666666,
+        "n_raw_in_file": 200,
+        "n_screened": 195,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_panel_qwen3-5-4b_n200_2026-05-16_00-18-50/inference/image_set_order__medframeqa__qwen3-5-4b.jsonl"
+      }
+    },
+    "qwen3-5-9b": {
+      "mantis_eval": {
+        "k6_flip_rate": 0.2777777777777778,
+        "n_raw_in_file": 70,
+        "n_screened": 18,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_full_qwen3-5-9b_2026-05-13_02-00-39_2026-05-13_02-00-39/inference/image_set_order__mantis_eval__qwen3-5-9b.jsonl"
+      },
+      "mean": {
+        "k6_flip_rate": 0.202991452991453,
+        "note": "cell-equal mean of screened Mantis-Eval and screened MedFrameQA"
+      },
+      "medframeqa": {
+        "k6_flip_rate": 0.1282051282051282,
+        "n_raw_in_file": 200,
+        "n_screened": 195,
+        "source": "EMNLP_2026/MMIOS/results/experiments/local_full_qwen3-5-9b_2026-05-13_02-00-39_2026-05-13_02-00-39/inference/image_set_order__medframeqa__qwen3-5-9b.jsonl"
+      }
+    }
+  },
+  "mixed_modality_cells": {
+    "claude-opus-4-7": [
+      {
+        "dataset": "mmdocrag",
+        "sem_flip": 0.32,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_claude_2026-05-24_06-02-29_2026-05-24_06-02-29/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mmqa",
+        "sem_flip": 0.355,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_claude_2026-05-24_06-02-29_2026-05-24_06-02-29/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mramg",
+        "sem_flip": 0.091,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_claude_2026-05-24_06-02-29_2026-05-24_06-02-29/summary_mixed_modality_with_equivalence.md"
+      }
+    ],
+    "claude-sonnet-4-6": [
+      {
+        "dataset": "mmdocrag",
+        "sem_flip": 0.279,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_claude_2026-05-24_06-02-29_2026-05-24_06-02-29/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mmqa",
+        "sem_flip": 0.48,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_claude_2026-05-24_06-02-29_2026-05-24_06-02-29/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mramg",
+        "sem_flip": 0.142,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_claude_2026-05-24_06-02-29_2026-05-24_06-02-29/summary_mixed_modality_with_equivalence.md"
+      }
+    ],
+    "gemini-3-flash-preview": [
+      {
+        "dataset": "mmdocrag",
+        "sem_flip": 0.275,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_gemini_0318_2026-05-24_03-18-22/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mmqa",
+        "sem_flip": 0.405,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_gemini_0318_2026-05-24_03-18-22/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mramg",
+        "sem_flip": 0.112,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_gemini_0318_2026-05-24_03-18-22/summary_mixed_modality_with_equivalence.md"
+      }
+    ],
+    "gemini-3.1-pro-preview": [
+      {
+        "dataset": "mmdocrag",
+        "sem_flip": 0.235,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_gemini_0318_2026-05-24_03-18-22/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mmqa",
+        "sem_flip": 0.295,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_gemini_0318_2026-05-24_03-18-22/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mramg",
+        "sem_flip": 0.223,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_gemini_0318_2026-05-24_03-18-22/summary_mixed_modality_with_equivalence.md"
+      }
+    ],
+    "gpt-5-4-mini": [
+      {
+        "dataset": "mmdocrag",
+        "sem_flip": 0.37,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_chatgpt_2026-05-24_02-17-37_2026-05-24_02-17-37/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mmqa",
+        "sem_flip": 0.56,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_chatgpt_2026-05-24_02-17-37_2026-05-24_02-17-37/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mramg",
+        "sem_flip": 0.157,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_chatgpt_2026-05-24_02-17-37_2026-05-24_02-17-37/summary_mixed_modality_with_equivalence.md"
+      }
+    ],
+    "gpt-5-5": [
+      {
+        "dataset": "mmdocrag",
+        "sem_flip": 0.185,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_chatgpt_2026-05-24_02-17-37_2026-05-24_02-17-37/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mmqa",
+        "sem_flip": 0.395,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_chatgpt_2026-05-24_02-17-37_2026-05-24_02-17-37/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mramg",
+        "sem_flip": 0.142,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_chatgpt_2026-05-24_02-17-37_2026-05-24_02-17-37/summary_mixed_modality_with_equivalence.md"
+      }
+    ],
+    "internvl3-5-14b": [
+      {
+        "dataset": "mmdocrag",
+        "sem_flip": 0.633,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mmqa",
+        "sem_flip": 0.667,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mramg",
+        "sem_flip": 0.533,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      }
+    ],
+    "internvl3-5-38b": [
+      {
+        "dataset": "mmdocrag",
+        "sem_flip": 0.833,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mmqa",
+        "sem_flip": 0.6,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mramg",
+        "sem_flip": 0.367,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      }
+    ],
+    "internvl3-5-4b": [
+      {
+        "dataset": "mmdocrag",
+        "sem_flip": 0.805,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mmqa",
+        "sem_flip": 0.55,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mramg",
+        "sem_flip": 0.604,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      }
+    ],
+    "internvl3-5-8b": [
+      {
+        "dataset": "mmdocrag",
+        "sem_flip": 0.7,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mmqa",
+        "sem_flip": 0.58,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mramg",
+        "sem_flip": 0.42,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      }
+    ],
+    "kimi-vl-a3b-instruct": [
+      {
+        "dataset": "mmdocrag",
+        "sem_flip": 0.695,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mmqa",
+        "sem_flip": 0.625,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mramg",
+        "sem_flip": 0.441,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      }
+    ],
+    "medgemma-27b-it": [
+      {
+        "dataset": "mmdocrag",
+        "sem_flip": 0.767,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mmqa",
+        "sem_flip": 0.433,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mramg",
+        "sem_flip": 0.32,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      }
+    ],
+    "medgemma-4b-it": [
+      {
+        "dataset": "mmdocrag",
+        "sem_flip": 0.84,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mmqa",
+        "sem_flip": 0.76,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mramg",
+        "sem_flip": 0.708,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      }
+    ],
+    "qwen3-5-0-8b": [
+      {
+        "dataset": "mmdocrag",
+        "sem_flip": 0.885,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mmqa",
+        "sem_flip": 0.855,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mramg",
+        "sem_flip": 0.766,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      }
+    ],
+    "qwen3-5-27b": [
+      {
+        "dataset": "mmdocrag",
+        "sem_flip": 0.433,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mmqa",
+        "sem_flip": 0.467,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mramg",
+        "sem_flip": 0.233,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      }
+    ],
+    "qwen3-5-2b": [
+      {
+        "dataset": "mmdocrag",
+        "sem_flip": 0.79,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mmqa",
+        "sem_flip": 0.735,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mramg",
+        "sem_flip": 0.619,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      }
+    ],
+    "qwen3-5-4b": [
+      {
+        "dataset": "mmdocrag",
+        "sem_flip": 0.69,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mmqa",
+        "sem_flip": 0.525,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mramg",
+        "sem_flip": 0.371,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      }
+    ],
+    "qwen3-5-9b": [
+      {
+        "dataset": "mmdocrag",
+        "sem_flip": 0.62,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mmqa",
+        "sem_flip": 0.62,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      },
+      {
+        "dataset": "mramg",
+        "sem_flip": 0.32,
+        "source": "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+      }
+    ]
+  },
+  "screen_counts": {
+    "mantis_eval": {
+      "behavior_tracks_ge80_either_model": 38,
+      "borderline": 3,
+      "exclude": 52,
+      "keep": 15,
+      "total": 70
+    },
+    "medframeqa": {
+      "borderline": 4,
+      "exclude": 5,
+      "keep": 191,
+      "total": 200
+    }
+  },
+  "sources": {
+    "experiments_root": "EMNLP_2026/MMIOS/results/experiments",
+    "mixed_modality_semflip": [
+      "EMNLP_2026/MMIOS/results/experiments/mixmod_gemini_0318_2026-05-24_03-18-22/summary_mixed_modality_with_equivalence.md",
+      "EMNLP_2026/MMIOS/results/experiments/mixmod_claude_2026-05-24_06-02-29_2026-05-24_06-02-29/summary_mixed_modality_with_equivalence.md",
+      "EMNLP_2026/MMIOS/results/experiments/mixmod_chatgpt_2026-05-24_02-17-37_2026-05-24_02-17-37/summary_mixed_modality_with_equivalence.md",
+      "EMNLP_2026/MMIOS/results/experiments/mixmod_local_overnight_2026-05-25/summary_mixed_modality_with_equivalence.md"
+    ],
+    "posthoc": "EMNLP_2026/EMNLP_writing/draft_figures_latest/posthoc_panel_extensions.json",
+    "screen": "EMNLP_2026/MMIOS/data/screens/imageset_position_reference_screen.json"
+  },
+  "table1_rows": [
+    {
+      "display": "Claude Opus 4.7",
+      "document_rank_order": 0.107093265447813,
+      "evidence_chunk_order": 0.23759507829977627,
+      "image_set_order_screened": 0.1252136752136752,
+      "mean5": 0.17004707045891956,
+      "mixed_modality_order": 0.25533333333333336,
+      "model": "claude-opus-4-7",
+      "option_order": 0.125
+    },
+    {
+      "display": "Claude Sonnet 4.6",
+      "document_rank_order": 0.3282352112534337,
+      "evidence_chunk_order": 0.28441834451901565,
+      "image_set_order_screened": 0.2111111111111111,
+      "mean5": 0.26431960004337873,
+      "mixed_modality_order": 0.30033333333333334,
+      "model": "claude-sonnet-4-6",
+      "option_order": 0.1975
+    },
+    {
+      "display": "ChatGPT 5.5",
+      "document_rank_order": 0.25926969401205435,
+      "evidence_chunk_order": 0.22748322147651007,
+      "image_set_order_screened": 0.1457264957264957,
+      "mean5": 0.19332921557634536,
+      "mixed_modality_order": 0.24066666666666667,
+      "model": "gpt-5-5",
+      "option_order": 0.0935
+    },
+    {
+      "display": "ChatGPT 5.4-mini",
+      "document_rank_order": 0.2740508940160792,
+      "evidence_chunk_order": 0.3963982102908278,
+      "image_set_order_screened": 0.3055555555555556,
+      "mean5": 0.3135675986391592,
+      "mixed_modality_order": 0.36233333333333334,
+      "model": "gpt-5-4-mini",
+      "option_order": 0.2295
+    },
+    {
+      "display": "Gemini-Pro 3.1",
+      "document_rank_order": 0.07528872432337125,
+      "evidence_chunk_order": 0.1278140703517588,
+      "image_set_order_screened": 0.10256410256410256,
+      "mean5": 0.1338333794478465,
+      "mixed_modality_order": 0.251,
+      "model": "gemini-3.1-pro-preview",
+      "option_order": 0.11249999999999999
+    },
+    {
+      "display": "Gemini-Flash 3",
+      "document_rank_order": 0.12714155573187574,
+      "evidence_chunk_order": 0.20297738693467338,
+      "image_set_order_screened": 0.14102564102564102,
+      "mean5": 0.18102891673843802,
+      "mixed_modality_order": 0.264,
+      "model": "gemini-3-flash-preview",
+      "option_order": 0.17
+    },
+    {
+      "display": "Qwen3.5-VL 0.8B",
+      "document_rank_order": 0.4116322711127658,
+      "evidence_chunk_order": 0.7237807606263982,
+      "image_set_order_screened": 0.3482905982905983,
+      "mean5": 0.6216073926726191,
+      "mixed_modality_order": 0.8353333333333334,
+      "model": "qwen3-5-0-8b",
+      "option_order": 0.7889999999999999
+    },
+    {
+      "display": "Qwen3.5-VL 2B",
+      "document_rank_order": 0.4115266192407152,
+      "evidence_chunk_order": 0.566744966442953,
+      "image_set_order_screened": 0.5756410256410256,
+      "mean5": 0.5877158555982721,
+      "mixed_modality_order": 0.7146666666666667,
+      "model": "qwen3-5-2b",
+      "option_order": 0.6699999999999999
+    },
+    {
+      "display": "Qwen3.5-VL 4B",
+      "document_rank_order": 0.22696789189297967,
+      "evidence_chunk_order": 0.4714765100671141,
+      "image_set_order_screened": 0.3277777777777778,
+      "mean5": 0.40207776928090766,
+      "mixed_modality_order": 0.5286666666666666,
+      "model": "qwen3-5-4b",
+      "option_order": 0.4555
+    },
+    {
+      "display": "Qwen3.5-VL 9B",
+      "document_rank_order": 0.28318978094845193,
+      "evidence_chunk_order": 0.4095973154362416,
+      "image_set_order_screened": 0.202991452991453,
+      "mean5": 0.36245570987522935,
+      "mixed_modality_order": 0.52,
+      "model": "qwen3-5-9b",
+      "option_order": 0.3965
+    },
+    {
+      "display": "Qwen3.5-VL 27B",
+      "document_rank_order": 0.28911131682480906,
+      "evidence_chunk_order": 0.33610738255033556,
+      "image_set_order_screened": 0.26495726495726496,
+      "mean5": 0.3081685261998152,
+      "mixed_modality_order": 0.37766666666666665,
+      "model": "qwen3-5-27b",
+      "option_order": 0.273
+    },
+    {
+      "display": "InternVL3.5 4B",
+      "document_rank_order": 0.284050089049435,
+      "evidence_chunk_order": 0.5031319910514541,
+      "image_set_order_screened": 0.2311965811965812,
+      "mean5": 0.42487573225949404,
+      "mixed_modality_order": 0.653,
+      "model": "internvl3-5-4b",
+      "option_order": 0.45299999999999996
+    },
+    {
+      "display": "InternVL3.5 8B",
+      "document_rank_order": 0.1946987915438254,
+      "evidence_chunk_order": 0.463165548098434,
+      "image_set_order_screened": 0.3252136752136752,
+      "mean5": 0.39704893630452026,
+      "mixed_modality_order": 0.5666666666666667,
+      "model": "internvl3-5-8b",
+      "option_order": 0.4355
+    },
+    {
+      "display": "InternVL3.5 14B",
+      "document_rank_order": 0.19212792932392864,
+      "evidence_chunk_order": 0.4212975391498881,
+      "image_set_order_screened": 0.25598290598290596,
+      "mean5": 0.37558167489134453,
+      "mixed_modality_order": 0.6110000000000001,
+      "model": "internvl3-5-14b",
+      "option_order": 0.3975
+    },
+    {
+      "display": "InternVL3.5 38B",
+      "document_rank_order": 0.3677213406719459,
+      "evidence_chunk_order": 0.4231096196868009,
+      "image_set_order_screened": 0.25384615384615383,
+      "mean5": 0.3861354228409802,
+      "mixed_modality_order": 0.6,
+      "model": "internvl3-5-38b",
+      "option_order": 0.28600000000000003
+    },
+    {
+      "display": "Kimi-VL-A3B-Instruct",
+      "document_rank_order": 0.28158487870158877,
+      "evidence_chunk_order": 0.4613758389261745,
+      "image_set_order_screened": 0.1829059829059829,
+      "mean5": 0.39267334010674926,
+      "mixed_modality_order": 0.587,
+      "model": "kimi-vl-a3b-instruct",
+      "option_order": 0.4505
+    },
+    {
+      "display": "MedGemma 4B-IT",
+      "document_rank_order": 0.33549248865500136,
+      "evidence_chunk_order": 0.5834116331096197,
+      "image_set_order_screened": 0.1905982905982906,
+      "mean5": 0.48926714913924896,
+      "mixed_modality_order": 0.7693333333333333,
+      "model": "medgemma-4b-it",
+      "option_order": 0.5675
+    },
+    {
+      "display": "MedGemma 27B-IT",
+      "document_rank_order": 0.25149421933328636,
+      "evidence_chunk_order": 0.46140939597315433,
+      "image_set_order_screened": 0.19273504273504274,
+      "mean5": 0.36906106494163,
+      "mixed_modality_order": 0.5066666666666667,
+      "model": "medgemma-27b-it",
+      "option_order": 0.43299999999999994
+    }
+  ]
+}

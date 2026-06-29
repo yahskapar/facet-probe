@@ -1,0 +1,38 @@
+{
+  "screen_json": "EMNLP_2026/MMIOS/data/screens/imageset_position_reference_screen.json",
+  "policy": "drop classification == exclude for image_set_order; keep keep + borderline",
+  "n_trials_before": 465899,
+  "n_trials_after": 459162,
+  "n_trials_dropped": 6737,
+  "n_image_items_before": 270,
+  "n_image_items_after": 213,
+  "per_dataset": {
+    "mantis_eval": {
+      "screen_exclude_items": 52,
+      "dropped_items_present": 52,
+      "dropped_trials": 6217,
+      "retained_items_present": 18
+    },
+    "medframeqa": {
+      "screen_exclude_items": 5,
+      "dropped_items_present": 5,
+      "dropped_trials": 520,
+      "retained_items_present": 195
+    }
+  },
+  "screen_summary_counts": {
+    "mantis_eval": {
+      "total": 70,
+      "exclude": 52,
+      "keep": 15,
+      "borderline": 3,
+      "behavior_tracks_ge80_either_model": 38
+    },
+    "medframeqa": {
+      "total": 200,
+      "exclude": 5,
+      "keep": 191,
+      "borderline": 4
+    }
+  }
+}

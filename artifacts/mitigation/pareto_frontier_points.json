@@ -1,0 +1,1278 @@
+{
+  "points": [
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "mt_eval",
+      "model": "gemini-3-flash-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.0
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "mt_eval",
+      "model": "gemini-3-flash-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.0,
+      "coverage": 0.003333333333333333
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "mt_eval",
+      "model": "gemini-3-flash-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.0
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "mt_eval",
+      "model": "gemini-3-flash-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.0
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "mt_eval",
+      "model": "gemini-3-flash-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.0
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "mt_eval",
+      "model": "gemini-3-flash-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.0
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "mt_eval",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.0
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "mt_eval",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.0,
+      "coverage": 0.005
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "mt_eval",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.0
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "mt_eval",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.0
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "mt_eval",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.0
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "mt_eval",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.0
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "multichallenge",
+      "model": "gemini-3-flash-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.11083333333333333
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "multichallenge",
+      "model": "gemini-3-flash-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.23214285714285715,
+      "coverage": 0.152
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "multichallenge",
+      "model": "gemini-3-flash-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.23107142857142857
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "multichallenge",
+      "model": "gemini-3-flash-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.15
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "multichallenge",
+      "model": "gemini-3-flash-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.01
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "multichallenge",
+      "model": "gemini-3-flash-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.3
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "multichallenge",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.22416666666666665
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "multichallenge",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.49624060150375937,
+      "coverage": 0.22566666666666665
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "multichallenge",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.4934837092731829
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "multichallenge",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.315
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "multichallenge",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.08
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "multichallenge",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.38
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "musique_synth",
+      "model": "gemini-3-flash-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.9033333333333334
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "musique_synth",
+      "model": "gemini-3-flash-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.9285714285714286,
+      "coverage": 0.9006666666666666
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "musique_synth",
+      "model": "gemini-3-flash-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.9272857142857143
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "musique_synth",
+      "model": "gemini-3-flash-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.945
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "musique_synth",
+      "model": "gemini-3-flash-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.79
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "musique_synth",
+      "model": "gemini-3-flash-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.97
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "musique_synth",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.9491666666666667
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "musique_synth",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.96,
+      "coverage": 0.9516666666666667
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "musique_synth",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.9580000000000001
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "musique_synth",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.98
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "musique_synth",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.885
+    },
+    {
+      "facet": "dialog_turn_order",
+      "dataset": "musique_synth",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.985
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.6691792294807369
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.6746231155778895,
+      "coverage": 0.936683417085427
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.6744436468054559
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.6733668341708543
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.6231155778894473
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.7085427135678392
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.6909547738693468
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.6889806173725772,
+      "coverage": 0.9591289782244556
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.688872936109117
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.6884422110552764
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.6683417085427136
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.7236180904522613
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "multihop_rag",
+      "model": "gemini-3-flash-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.8625730994152047
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "multihop_rag",
+      "model": "gemini-3-flash-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.8777310924369749,
+      "coverage": 0.9321637426900585
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "multihop_rag",
+      "model": "gemini-3-flash-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.8770588235294118
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "multihop_rag",
+      "model": "gemini-3-flash-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.8830409356725146
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "multihop_rag",
+      "model": "gemini-3-flash-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.8070175438596491
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "multihop_rag",
+      "model": "gemini-3-flash-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.8888888888888888
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "multihop_rag",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.8898635477582846
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "multihop_rag",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.9,
+      "coverage": 0.962962962962963
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "multihop_rag",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.9
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "multihop_rag",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.8888888888888888
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "multihop_rag",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.8538011695906432
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "multihop_rag",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.9122807017543859
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.6088777219430487
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.6102536491983728,
+      "coverage": 0.8887772194304858
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.6094280928451782
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.6130653266331658
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.5628140703517588
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.6683417085427136
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.6390284757118927
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.6378320172290022,
+      "coverage": 0.9323283082077052
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.6386934673366834
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.6381909547738693
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.6080402010050251
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "hotpotqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.6834170854271356
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "musique",
+      "model": "gemini-3-flash-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.6725
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "musique",
+      "model": "gemini-3-flash-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.6860714285714287,
+      "coverage": 0.889
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "musique",
+      "model": "gemini-3-flash-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.6855
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "musique",
+      "model": "gemini-3-flash-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.69
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "musique",
+      "model": "gemini-3-flash-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.585
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "musique",
+      "model": "gemini-3-flash-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.72
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "musique",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.7025
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "musique",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.70125,
+      "coverage": 0.9383333333333332
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "musique",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.7014285714285714
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "musique",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.705
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "musique",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.67
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "musique",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.74
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "gsm8k",
+      "model": "gemini-3-flash-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.9925
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "gsm8k",
+      "model": "gemini-3-flash-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.9925,
+      "coverage": 0.997
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "gsm8k",
+      "model": "gemini-3-flash-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.9925
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "gsm8k",
+      "model": "gemini-3-flash-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.995
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "gsm8k",
+      "model": "gemini-3-flash-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.99
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "gsm8k",
+      "model": "gemini-3-flash-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.995
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "gsm8k",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.995
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "gsm8k",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.995,
+      "coverage": 1.0
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "gsm8k",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.995
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "gsm8k",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.995
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "gsm8k",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.995
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "gsm8k",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.995
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "humaneval",
+      "model": "gemini-3-flash-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.0
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "humaneval",
+      "model": "gemini-3-flash-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.0,
+      "coverage": 0.7358974358974358
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "humaneval",
+      "model": "gemini-3-flash-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.0
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "humaneval",
+      "model": "gemini-3-flash-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.0
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "humaneval",
+      "model": "gemini-3-flash-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.0
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "humaneval",
+      "model": "gemini-3-flash-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.0
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "humaneval",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.0
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "humaneval",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.0,
+      "coverage": 0.8431623931623934
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "humaneval",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.0
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "humaneval",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.0
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "humaneval",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.0
+    },
+    {
+      "facet": "few_shot_order",
+      "dataset": "humaneval",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.0
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "mantis_eval",
+      "model": "gemini-3-flash-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.5023809523809526
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "mantis_eval",
+      "model": "gemini-3-flash-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.5023809523809526,
+      "coverage": 0.45714285714285713
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "mantis_eval",
+      "model": "gemini-3-flash-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.5064625850340138
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "mantis_eval",
+      "model": "gemini-3-flash-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.4857142857142857
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "mantis_eval",
+      "model": "gemini-3-flash-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.2857142857142857
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "mantis_eval",
+      "model": "gemini-3-flash-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.9571428571428572
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "mantis_eval",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.49761904761904774
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "mantis_eval",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.5052721088435377,
+      "coverage": 0.45428571428571424
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "mantis_eval",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.5063945578231294
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "mantis_eval",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.5571428571428572
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "mantis_eval",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.2714285714285714
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "mantis_eval",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.9571428571428572
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "medframeqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.5658333333333333
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "medframeqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.567857142857143,
+      "coverage": 0.8576666666666667
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "medframeqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.5670000000000001
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "medframeqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.57
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "medframeqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.455
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "medframeqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.68
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "medframeqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.5875
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "medframeqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.5908928571428571,
+      "coverage": 0.9013333333333332
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "medframeqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.5919285714285715
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "medframeqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.59
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "medframeqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.5
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "medframeqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.67
+    },
+    {
+      "facet": "option_order",
+      "dataset": "commonsenseqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.8758333333333332
+    },
+    {
+      "facet": "option_order",
+      "dataset": "commonsenseqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.8846428571428572,
+      "coverage": 0.935
+    },
+    {
+      "facet": "option_order",
+      "dataset": "commonsenseqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.8835
+    },
+    {
+      "facet": "option_order",
+      "dataset": "commonsenseqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.89
+    },
+    {
+      "facet": "option_order",
+      "dataset": "commonsenseqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.8
+    },
+    {
+      "facet": "option_order",
+      "dataset": "commonsenseqa",
+      "model": "gemini-3-flash-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.93
+    },
+    {
+      "facet": "option_order",
+      "dataset": "commonsenseqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.9108333333333334
+    },
+    {
+      "facet": "option_order",
+      "dataset": "commonsenseqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.9160714285714286,
+      "coverage": 0.9676666666666667
+    },
+    {
+      "facet": "option_order",
+      "dataset": "commonsenseqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.9155
+    },
+    {
+      "facet": "option_order",
+      "dataset": "commonsenseqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.915
+    },
+    {
+      "facet": "option_order",
+      "dataset": "commonsenseqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.865
+    },
+    {
+      "facet": "option_order",
+      "dataset": "commonsenseqa",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.94
+    },
+    {
+      "facet": "option_order",
+      "dataset": "mmlu_pro",
+      "model": "gemini-3-flash-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.8491666666666667
+    },
+    {
+      "facet": "option_order",
+      "dataset": "mmlu_pro",
+      "model": "gemini-3-flash-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.8535119047619049,
+      "coverage": 0.8966666666666667
+    },
+    {
+      "facet": "option_order",
+      "dataset": "mmlu_pro",
+      "model": "gemini-3-flash-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.8539047619047619
+    },
+    {
+      "facet": "option_order",
+      "dataset": "mmlu_pro",
+      "model": "gemini-3-flash-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.84
+    },
+    {
+      "facet": "option_order",
+      "dataset": "mmlu_pro",
+      "model": "gemini-3-flash-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.76
+    },
+    {
+      "facet": "option_order",
+      "dataset": "mmlu_pro",
+      "model": "gemini-3-flash-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.935
+    },
+    {
+      "facet": "option_order",
+      "dataset": "mmlu_pro",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P1_singlepass",
+      "cost": 1,
+      "accuracy": 0.865
+    },
+    {
+      "facet": "option_order",
+      "dataset": "mmlu_pro",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P2_K2_abstain",
+      "cost": 2,
+      "accuracy": 0.8764880952380952,
+      "coverage": 0.9236666666666666
+    },
+    {
+      "facet": "option_order",
+      "dataset": "mmlu_pro",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P3_K3_majority",
+      "cost": 3,
+      "accuracy": 0.8757380952380953
+    },
+    {
+      "facet": "option_order",
+      "dataset": "mmlu_pro",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P4_K6_majority",
+      "cost": 6,
+      "accuracy": 0.885
+    },
+    {
+      "facet": "option_order",
+      "dataset": "mmlu_pro",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P5_worst_case_oracle",
+      "cost": 6,
+      "accuracy": 0.795
+    },
+    {
+      "facet": "option_order",
+      "dataset": "mmlu_pro",
+      "model": "gemini-3.1-pro-preview",
+      "policy": "P6_best_case_oracle",
+      "cost": 6,
+      "accuracy": 0.92
+    }
+  ]
+}

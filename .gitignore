@@ -216,3 +216,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Facet-Probe local run outputs
+/data/*
+!/data/README.md
+/results/
+/raw_outputs/
+/model_cache/
+/hf_cache/

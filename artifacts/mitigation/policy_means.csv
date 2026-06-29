@@ -1,0 +1,7 @@
+policy_id,cost,delta_vs_p1,label,mean_accuracy,all_items_accuracy_abstention_incorrect,coverage
+P1_singlepass,1,0.0,P1 single-pass,0.628968866284315,,
+P2_K2_abstain,2,0.01942998716867239,P2 K=2 abstain,0.6483988534529874,0.5903264546342849,0.797210899039994
+P3_K3_majority,3,0.019044385033488376,P3 K=3 majority,0.6480132513178034,,
+P4_K6_majority,6,0.010915891338881711,P4 K=6 majority,0.6398847576231967,,
+P5_worst_case_oracle,6,-0.04858384270279281,P5 worst-order oracle,0.5803850235815222,,
+P6_best_case_oracle,6,0.045529961812360575,P6 best-order oracle,0.6744988280966756,,

@@ -1,0 +1,10 @@
+Facet-Probe
+Copyright 2026 Akshay Paruchuri, Sanmi Koyejo, and Ehsan Adeli
+
+This product includes derived evaluation artifacts for the paper
+"Same Evidence, Different Answer: Auditing Order Sensitivity in Multimodal
+Large Language Models."
+
+Upstream datasets, model APIs, and third-party dependencies retain their own
+licenses and terms. This repository does not redistribute upstream dataset
+text, images, tables, or prompts.

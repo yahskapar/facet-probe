@@ -1,0 +1,149 @@
+{
+  "n_trials": 322776,
+  "n_items": 3614,
+  "n_models": 18,
+  "facets": [
+    "document_rank_order",
+    "evidence_chunk_order",
+    "image_set_order",
+    "mixed_modality_order",
+    "option_order"
+  ],
+  "models": [
+    "claude-opus-4-7",
+    "claude-sonnet-4-6",
+    "gemini-3-flash-preview",
+    "gemini-3.1-pro-preview",
+    "gpt-5-4-mini",
+    "gpt-5-5",
+    "internvl3-5-14b",
+    "internvl3-5-38b",
+    "internvl3-5-4b",
+    "internvl3-5-8b",
+    "kimi-vl-a3b-instruct",
+    "medgemma-27b-it",
+    "medgemma-4b-it",
+    "qwen3-5-0-8b",
+    "qwen3-5-27b",
+    "qwen3-5-2b",
+    "qwen3-5-4b",
+    "qwen3-5-9b"
+  ],
+  "by_facet_dataset": [
+    {
+      "facet": "document_rank_order",
+      "dataset": "hotpotqa",
+      "n_trials": 34567,
+      "n_items": 450,
+      "n_models": 18
+    },
+    {
+      "facet": "document_rank_order",
+      "dataset": "multihop_rag",
+      "n_trials": 74087,
+      "n_items": 689,
+      "n_models": 18
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "hotpotqa",
+      "n_trials": 34561,
+      "n_items": 388,
+      "n_models": 18
+    },
+    {
+      "facet": "evidence_chunk_order",
+      "dataset": "musique",
+      "n_trials": 34796,
+      "n_items": 398,
+      "n_models": 18
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "mantis_eval",
+      "n_trials": 2147,
+      "n_items": 18,
+      "n_models": 18
+    },
+    {
+      "facet": "image_set_order",
+      "dataset": "medframeqa",
+      "n_trials": 20770,
+      "n_items": 195,
+      "n_models": 18
+    },
+    {
+      "facet": "mixed_modality_order",
+      "dataset": "mmdocrag",
+      "n_trials": 14766,
+      "n_items": 200,
+      "n_models": 18
+    },
+    {
+      "facet": "mixed_modality_order",
+      "dataset": "mmqa",
+      "n_trials": 14808,
+      "n_items": 200,
+      "n_models": 18
+    },
+    {
+      "facet": "mixed_modality_order",
+      "dataset": "mramg",
+      "n_trials": 14562,
+      "n_items": 197,
+      "n_models": 18
+    },
+    {
+      "facet": "option_order",
+      "dataset": "commonsenseqa",
+      "n_trials": 21600,
+      "n_items": 200,
+      "n_models": 18
+    },
+    {
+      "facet": "option_order",
+      "dataset": "mmlu_pro",
+      "n_trials": 56112,
+      "n_items": 679,
+      "n_models": 18
+    }
+  ],
+  "screen": {
+    "screen_json": "EMNLP_2026/MMIOS/data/screens/imageset_position_reference_screen.json",
+    "policy": "drop classification == exclude for image_set_order; keep keep + borderline",
+    "n_trials_before": 465899,
+    "n_trials_after": 459162,
+    "n_trials_dropped": 6737,
+    "n_image_items_before": 270,
+    "n_image_items_after": 213,
+    "per_dataset": {
+      "mantis_eval": {
+        "screen_exclude_items": 52,
+        "dropped_items_present": 52,
+        "dropped_trials": 6217,
+        "retained_items_present": 18
+      },
+      "medframeqa": {
+        "screen_exclude_items": 5,
+        "dropped_items_present": 5,
+        "dropped_trials": 520,
+        "retained_items_present": 195
+      }
+    },
+    "screen_summary_counts": {
+      "mantis_eval": {
+        "total": 70,
+        "exclude": 52,
+        "keep": 15,
+        "borderline": 3,
+        "behavior_tracks_ge80_either_model": 38
+      },
+      "medframeqa": {
+        "total": 200,
+        "exclude": 5,
+        "keep": 191,
+        "borderline": 4
+      }
+    }
+  }
+}

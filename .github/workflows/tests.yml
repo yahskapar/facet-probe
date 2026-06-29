@@ -1,0 +1,28 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Check setup scripts
+        run: |
+          bash setup.sh conda --dry-run
+          bash setup.sh uv --dry-run
+      - name: Test
+        run: pytest
+      - name: Verify artifacts
+        run: facet-probe verify-artifacts
+      - name: Audit release metadata
+        run: python scripts/audit_release.py --offline-only

@@ -1,0 +1,1 @@
+{"item_id":"toy::1","dataset":"toy","question_ref":"toy-question-1","components":[{"component_id":"choice-a","kind":"choice","content_ref":"toy-choice-a","label":"A"},{"component_id":"choice-b","kind":"choice","content_ref":"toy-choice-b","label":"B"},{"component_id":"choice-c","kind":"choice","content_ref":"toy-choice-c","label":"C"}],"choices":["A","B","C"],"gold":"choice-a"}

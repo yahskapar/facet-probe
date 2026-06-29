@@ -1,0 +1,35 @@
+version: 1
+seed: 42
+k: 6
+
+grammar:
+  default:
+    rule: sample_without_replacement
+    include_canonical: true
+    when_factorial_lt_k: cycle_all_unique_permutations
+    stable_seed: sha256(seed, item_id, n_components, k)
+
+  option_order:
+    unit: option content
+    k: 6
+    scoring_note: >
+      A model letter is converted through the inverse display permutation to a
+      source option index before scoring.
+
+  evidence_chunk_order:
+    unit: passage
+    k: 6
+
+  document_rank_order:
+    unit: retrieved document
+    k: 6
+
+  image_set_order:
+    unit: image slot
+    k: 6
+    screen: artifacts/screens/imageset_position_reference_screen.csv
+
+  mixed_modality_order:
+    unit: heterogeneous component
+    k: 6
+    scoring_note: Structured LLM-judge gold-match label.

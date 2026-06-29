@@ -1,0 +1,8 @@
+{
+  "max_rhat": 1.15,
+  "min_ess_bulk": 19.0,
+  "min_ess_tail": 100.0,
+  "diverging": 0,
+  "n_chains": 4,
+  "n_draws": 1500
+}

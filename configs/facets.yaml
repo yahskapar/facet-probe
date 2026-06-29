@@ -1,0 +1,69 @@
+version: 1
+default_seed: 42
+default_k: 6
+
+facets:
+  option_order:
+    status: main
+    unit: answer-option display slots
+    scoring: option_content_idx
+    summary: >
+      Permutes which option content appears under each displayed letter. The
+      predicted letter is mapped back to the source option index before scoring
+      or flip detection.
+
+  evidence_chunk_order:
+    status: main
+    unit: flat evidence passages
+    scoring: exact_match
+    summary: >
+      Permutes paragraphs or short passages in a single flat evidence list.
+
+  document_rank_order:
+    status: main
+    unit: ranked retrieved documents
+    scoring: exact_match
+    summary: >
+      Permutes complete retrieved documents in a RAG prompt. The unit differs
+      from evidence_chunk_order: documents remain complete retrieval units.
+
+  image_set_order:
+    status: main
+    unit: multi-image input slots
+    scoring: mcq_letter
+    screen: artifacts/screens/imageset_position_reference_screen.csv
+    summary: >
+      Permutes multi-image inputs. Clean paper summaries drop position-referential
+      items whose fixed gold label is invalidated by image permutation.
+
+  mixed_modality_order:
+    status: main
+    unit: heterogeneous text/image component sequence
+    scoring: llm_judge_gold_match
+    summary: >
+      Permutes the complete sequence of text and image components in free-form
+      multimodal RAG. Semantic flip is measured by structured LLM-judge labels.
+
+  dialog_turn_order:
+    status: demoted
+    unit: prior dialog turns
+    scoring: exact_match_or_judge
+    summary: >
+      Reported as an appendix diagnostic because scoring regimes were
+      heterogeneous and same-ordering accuracy was degenerate in MultiChallenge.
+
+  few_shot_order:
+    status: demoted
+    unit: few-shot demonstrations
+    scoring: task_specific
+    summary: >
+      Reported as an appendix diagnostic. GSM8K was near-null under Gemini,
+      while HumanEval was much more order-sensitive.
+
+  tool_description_order:
+    status: null_or_stress
+    unit: tool descriptions
+    scoring: function_name
+    summary: >
+      Disambiguating tool queries gave a reliable null; harder stress queries
+      were order-sensitive.

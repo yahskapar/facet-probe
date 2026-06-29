@@ -1,0 +1,13 @@
+dataset,hf_repo,config,split,audited_n,license,primary_facets,notes
+commonsenseqa,tau/commonsense_qa,,validation,200,MIT,option_order,
+hotpotqa,hotpotqa/hotpot_qa,default,validation,199,CC-BY-SA-4.0,evidence_chunk_order;document_rank_order,Distractor-augmented validation split; retrieved evidence replayed verbatim.
+mantis_eval,TIGER-Lab/Mantis-Eval,,test,70 raw / 18 clean,Apache-2.0,image_set_order,Clean summaries apply the position-reference screen.
+mathvision,MathLLMs/MathVision,,testmini,190,CC-BY-4.0,option_order,
+medframeqa,SuhaoYu1020/MedFrameQA,,test,200 raw / 195 clean,CC-BY-NC-4.0,image_set_order,Used for non-commercial academic evaluation; clean summaries apply the screen.
+medxpertqa,TsinghuaC3I/MedXpertQA,MM,test,150,CC-BY-NC-4.0,evidence_chunk_order,Retrieved-evidence variant; used for non-commercial academic evaluation.
+mmdocrag,MMDocIR/MMDocRAG,,dev_15.jsonl,200,Apache-2.0,mixed_modality_order,
+mmlu_pro,TIGER-Lab/MMLU-Pro,,test,200,MIT,option_order,
+mmqa,TableQAKit/MMQA,,dev,200,MIT,mixed_modality_order,MultiModalQA short-factoid subset provides the mixed-modality gold anchor.
+mramg,MRAMG/MRAMG-Bench,,recipe_mqa.jsonl,197,CC-BY-4.0,mixed_modality_order,MRAMG-Recipe after image-load filter.
+multihop_rag,yixuantt/MultiHopRAG,MultiHopRAG,train,171,MIT,document_rank_order,
+musique,dgslibisey/MuSiQue,,validation,200,CC-BY-4.0,evidence_chunk_order,

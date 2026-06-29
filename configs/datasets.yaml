@@ -1,0 +1,130 @@
+version: 1
+seed: 42
+redistribution_policy: >
+  This repo does not redistribute upstream dataset text, images, tables, or
+  prompts. This initial release includes dataset IDs, sanitized item IDs for
+  the image-set screen, compact derived summaries, provenance notes, and
+  aggregate metrics where releasable. Full permutation-index dumps and
+  normalized model-output JSONL are not shipped unless explicitly listed in
+  configs/release_artifacts.yaml.
+
+datasets:
+  mmlu_pro:
+    hf_repo: TIGER-Lab/MMLU-Pro
+    split: test
+    license: MIT
+    audited_n: 200
+    facets: [option_order]
+    filters:
+      min_choices: 4
+
+  commonsenseqa:
+    hf_repo: tau/commonsense_qa
+    split: validation
+    license: MIT
+    audited_n: 200
+    facets: [option_order]
+
+  mathvision:
+    hf_repo: MathLLMs/MathVision
+    split: testmini
+    license: CC-BY-4.0
+    audited_n: 190
+    facets: [option_order]
+    filters:
+      min_choices: 3
+      requires_image: true
+
+  hotpotqa:
+    hf_repo: hotpotqa/hotpot_qa
+    config: default
+    split: validation
+    revision: refs/convert/parquet
+    license: CC-BY-SA-4.0
+    audited_n: 199
+    facets: [evidence_chunk_order, document_rank_order]
+    notes: Distractor-augmented validation split; gold evidence is not prefiltered.
+
+  musique:
+    hf_repo: dgslibisey/MuSiQue
+    split: validation
+    license: CC-BY-4.0
+    audited_n: 200
+    facets: [evidence_chunk_order]
+
+  medxpertqa:
+    hf_repo: TsinghuaC3I/MedXpertQA
+    config: MM
+    split: test
+    license: CC-BY-NC-4.0
+    audited_n: 150
+    facets: [evidence_chunk_order]
+    notes: Retrieved-evidence variant used for non-commercial academic evaluation.
+
+  multihop_rag:
+    hf_repo: yixuantt/MultiHopRAG
+    config: MultiHopRAG
+    split: train
+    license: MIT
+    audited_n: 171
+    facets: [document_rank_order]
+
+  mantis_eval:
+    hf_repo: TIGER-Lab/Mantis-Eval
+    split: test
+    license: Apache-2.0
+    audited_n_raw: 70
+    audited_n_clean: 18
+    facets: [image_set_order]
+    filters:
+      question_type: multi-choice
+      min_images: 3
+    screen: artifacts/screens/imageset_position_reference_screen.csv
+
+  medframeqa:
+    hf_repo: SuhaoYu1020/MedFrameQA
+    split: test
+    license: CC-BY-NC-4.0
+    audited_n_raw: 200
+    audited_n_clean: 195
+    facets: [image_set_order]
+    screen: artifacts/screens/imageset_position_reference_screen.csv
+    notes: Used for non-commercial academic evaluation.
+
+  mramg:
+    hf_repo: MRAMG/MRAMG-Bench
+    files: [recipe_mqa.jsonl, doc_recipe.jsonl, IMAGE.zip]
+    license: CC-BY-4.0
+    audited_n: 197
+    facets: [mixed_modality_order]
+    notes: MRAMG-Recipe after image-load filter.
+
+  mmdocrag:
+    hf_repo: MMDocIR/MMDocRAG
+    files: [dev_15.jsonl, images.zip]
+    license: Apache-2.0
+    audited_n: 200
+    facets: [mixed_modality_order]
+
+  mmqa:
+    hf_repo: TableQAKit/MMQA
+    split: dev
+    license: MIT
+    audited_n: 200
+    facets: [mixed_modality_order]
+    notes: MultiModalQA short-factoid items provide the judge-free gold anchor.
+
+demoted_datasets:
+  gsm8k:
+    hf_repo: openai/gsm8k
+    config: main
+    license: MIT
+    facets: [few_shot_order]
+  humaneval:
+    hf_repo: openai/openai_humaneval
+    license: MIT
+    facets: [few_shot_order]
+  multichallenge:
+    hf_repo: ScaleAI/multichallenge
+    license: CC-BY-4.0
+    facets: [dialog_turn_order]

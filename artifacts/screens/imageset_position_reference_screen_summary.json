@@ -1,0 +1,26 @@
+{
+  "classification_rules": {
+    "borderline": "Position language present (temporal/sequence/per-position narration) but the gold answer is a content string that is order-invariant; documented individually for human review.",
+    "exclude": "Question/options are position-referential such that reordering images changes the true gold: options enumerate image positions ('first image','image 2','(A) Image 1'); question asks to IDENTIFY/SELECT an image ('which image shows/best depicts ...') with image-index options; options map each image POSITION to a label; answer is a SEQUENCE of image positions; or absolute spatial/order language is load-bearing.",
+    "keep": "Answer text is order-invariant: counting across all images, set-membership ('not depicted in any image'), attribute questions with TEXTUAL answer options, or a diagnosis/finding derived from the combined frame set."
+  },
+  "date_built": "2026-06-10",
+  "public_sanitization": "Question text, choices, and free-text rationales are omitted here to avoid redistributing upstream dataset content. Use item IDs with the upstream datasets to inspect the original records under their licenses.",
+  "purpose": "Identify image_set_order items whose fixed (position-letter) gold is invalidated when the image sequence is permuted, i.e. position-referential items where reordering the images changes the TRUE gold. Such items must be excluded from order-robustness scoring because the as-scored gold is tied to an image slot, not to content.",
+  "summary_counts": {
+    "mantis_eval": {
+      "behavior_tracks_ge80_either_model": 38,
+      "borderline": 3,
+      "exclude": 52,
+      "keep": 15,
+      "total": 70
+    },
+    "medframeqa": {
+      "borderline": 4,
+      "exclude": 5,
+      "keep": 191,
+      "total": 200
+    }
+  },
+  "title": "Image-set position-reference screen (image_set_order facet)"
+}

@@ -1,0 +1,6 @@
+facet,sigma_pi_median,sigma_pi_hdi89_low,sigma_pi_hdi89_high,sigma_delta_median,sigma_delta_hdi89_low,sigma_delta_hdi89_high
+option_order,0.086091,0.050446,0.118783,0.012044,0.0,0.033048
+document_rank_order,0.093481,0.053761,0.136924,0.027487,3e-06,0.06292
+evidence_chunk_order,0.102758,0.057957,0.146401,0.027626,5.6e-05,0.05965
+image_set_order,0.147333,0.077929,0.224815,0.063795,1.1e-05,0.143136
+mixed_modality_order,0.246045,0.09465,0.415704,2.363502,1.972798,2.764298
