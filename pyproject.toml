@@ -33,6 +33,7 @@ classifiers = [
 ]
 dependencies = [
   "PyYAML>=6.0.1",
+  "tomli>=2.0; python_version < '3.11'",
 ]
 
 [project.optional-dependencies]
@@ -40,6 +41,18 @@ hf = [
   "datasets>=2.20",
   "huggingface-hub>=0.24",
   "Pillow>=10",
+]
+models = [
+  "accelerate>=1.0",
+  "bitsandbytes>=0.43; platform_system != 'Darwin'",
+  "qwen-vl-utils>=0.0.11",
+  "torch>=2.5",
+  "transformers>=4.52",
+]
+providers = [
+  "anthropic>=0.35",
+  "google-genai>=1.0",
+  "openai>=1.40",
 ]
 analysis = [
   "pandas>=2.0",
@@ -68,6 +81,33 @@ Repository = "https://github.com/yahskapar/facet-probe"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/facet_probe"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"configs" = "facet_probe/release/configs"
+"artifacts" = "facet_probe/release/artifacts"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/src",
+  "/tests",
+  "/configs",
+  "/artifacts",
+  "/docs",
+  "/examples",
+  "/scripts",
+  "/.github",
+  "/.env.example",
+  "/ARTIFACT_LICENSES.md",
+  "/CITATION.cff",
+  "/CONTRIBUTING.md",
+  "/LICENSE",
+  "/NOTICE",
+  "/README.md",
+  "/RELEASE_NOTES.md",
+  "/environment.yml",
+  "/setup.sh",
+  "/pyproject.toml",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

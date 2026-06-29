@@ -218,6 +218,7 @@ __marimo__/
 .streamlit/secrets.toml
 
 # Facet-Probe local run outputs
+/runs/
 /data/*
 !/data/README.md
 /results/

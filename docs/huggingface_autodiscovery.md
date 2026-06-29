@@ -15,13 +15,13 @@ The implemented inspect-only entry point is:
 facet-probe inspect-hf DATASET_ID --config CONFIG --split SPLIT --sample 20 --emit-spec
 ```
 
-The command would produce:
+With the `hf` extra installed and network access available, the command emits:
 
 - a dataset metadata summary,
 - candidate facets such as `option_order` or `image_set_order`,
 - warnings about missing gold labels, ambiguous schemas, gated data, or
   unsupported modalities,
-- a starter `configs/datasets.yaml` entry.
+- a starter `configs/datasets.yaml` fragment.
 
 Use `--output inspection.json` to save the full inspection object and
 `--spec-output dataset_fragment.yaml` to save the starter config fragment.

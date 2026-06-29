@@ -11,18 +11,28 @@ The shipped artifacts are aggregate or derived release files:
 - screened image-set item IDs and classifications,
 - decoder-noise decomposition summaries,
 - mitigation policy summaries,
-- ODI per-facet summaries, posterior interval summaries, theta summaries, and compact per-item parameter parquet files.
+- ODI per-facet summaries, posterior interval summaries, theta summaries, and
+  compact per-item parameter parquet files.
 
 These artifacts are intended for research reproduction of the paper's reported numbers.
 
 ## Not Included
 
-This repo intentionally does not redistribute upstream dataset text, images, or tables. It also excludes credentials, provider caches, raw provider-output run trees, full prompt and judge-prompt text, per-item judge labels, and multi-gigabyte posterior traces.
+This repo intentionally does not redistribute upstream dataset text, images, or
+tables. It also excludes credentials, provider caches, raw provider-output run
+trees, full prompt and judge-prompt text, per-item judge labels, and
+multi-gigabyte posterior traces.
 
-The sanitized image-set screen includes item IDs, classifications, regex flags, and aggregate behavioral diagnostics, but omits question text, choices, and free-text rationales from upstream datasets.
+The sanitized image-set screen includes item IDs, classifications, regex flags,
+and aggregate behavioral diagnostics, but omits question text, choices, and
+free-text rationales from upstream datasets.
 
 ## Third-Party Terms
 
-Using the reproduction configs may require downloading upstream datasets or calling model providers. Those resources are subject to their own licenses and terms, including non-commercial restrictions for MedXpertQA and MedFrameQA.
+Using the reproduction configs may require downloading upstream datasets or
+calling model providers. Those resources are subject to their own licenses and
+terms, including non-commercial restrictions for MedXpertQA and MedFrameQA.
 
-Closed-source provider outputs and APIs may be subject to provider-specific terms. The arXiv paper pins the closed-source access window to May 4-25, 2026 as the reproducibility anchor.
+Closed-source provider outputs and APIs may be subject to provider-specific
+terms. The arXiv paper pins the closed-source access window to May 4-25, 2026
+as the reproducibility anchor.

@@ -52,3 +52,12 @@ def test_build_hf_inspection_suggests_facets_and_starter_spec_without_content():
     assert "mixed_modality_order" in inspection.candidate_facets
     assert inspection.starter_dataset_spec["visual_rag"]["hf_repo"] == "org/visual-rag"
     assert inspection.sample_profiles[0].observed_types
+
+
+def test_build_hf_inspection_uses_public_missing_split_label():
+    inspection = build_hf_inspection(
+        dataset_id="org/no-split",
+        features={"question": "string", "choices": ["string"], "answer": "string"},
+    )
+
+    assert inspection.starter_dataset_spec["no_split"]["split"] == "unspecified"

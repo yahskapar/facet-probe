@@ -134,4 +134,4 @@ excluded_by_design:
   - provider credentials and local caches
   - raw provider-output run tree
   - multi-gigabyte NumPyro posterior traces and pickle multitraces
-  - per-item judge labels, judge prompts, and calibration-dialog transcripts
+  - per-item judge labels, historical judge prompt transcripts, and calibration-dialog transcripts

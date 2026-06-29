@@ -107,9 +107,62 @@ Then run:
 facet-probe audit-jsonl trials.jsonl --group-csv group_summary.csv
 ```
 
-For `option_order`, normalize model letters to source option indices before writing `answer_normalized`, or use `facet_probe.scoring.normalize_answer("option_content_idx", raw, ...)`.
+For `option_order`, normalize model letters to source option indices before
+writing `answer_normalized`, or use
+`facet_probe.scoring.normalize_answer("option_content_idx", raw, ...)`.
 
-## Full Paper Reproduction
+## Paper-Profile Reruns
+
+Run the configured paper datasets and facets with one local HuggingFace model:
+
+```bash
+facet-probe paper-run \
+  --hf-model Qwen/Qwen3.5-VL-4B-Instruct \
+  --output-dir runs/qwen-paper
+```
+
+This command replaces the configured model set with the selected Qwen model. To
+inspect the full configured model/dataset profile without launching inference,
+run:
+
+```bash
+facet-probe paper-run --output-dir runs/full-paper --prepare-only
+```
+
+Remove `--prepare-only` only when the required API keys, local-model resources,
+dataset licenses, and storage budget are ready.
+
+The run directory contains `run_profile.json`, `provider_status.json`,
+`models.jsonl`, `datasets.jsonl`, `manifest.jsonl`, `trials.jsonl`,
+`summary.json`, `group_summary.csv`, `run_status.json`, and `report/`. The
+command also prints a JSON status summary to the terminal. It is strict by
+default: if a configured paper dataset does not load the audited item count, it
+fails rather than silently reporting a partial run as complete. Dataset loaders
+stream from HuggingFace where supported; file/archive-backed multimodal assets
+still download through the upstream distribution mechanism.
+
+For mixed-modality free-form outputs, compute paper-style semantic flip with a
+separate judge:
+
+```bash
+GOOGLE_API_KEY="..." facet-probe judge-mixed runs/qwen-paper/trials.jsonl \
+  --judge mixed-semantic-primary \
+  --output-dir runs/qwen-paper/mixed_semantic_judge
+```
+
+This writes `mixed_semantic_judgments.jsonl`,
+`mixed_semantic_summary.json`, and `mixed_semantic_summary.csv`. The named judge
+profile lives in `configs/models.yaml`; override it with `--judge`, or with
+`--provider`, `--api-model`, and `--api-key-env`.
+
+Or run the configured judge immediately after generation:
+
+```bash
+GOOGLE_API_KEY="..." facet-probe paper-run \
+  --hf-model Qwen/Qwen3.5-VL-4B-Instruct \
+  --output-dir runs/qwen-paper \
+  --judge-mixed
+```
 
 Full reproduction requires:
 
@@ -120,4 +173,5 @@ Full reproduction requires:
 - image-set screen from `artifacts/screens/`,
 - LLM-judge configuration for mixed-modality scoring.
 
-Closed-source provider drift is a limitation. The paper pins the access window to May 4-25, 2026.
+Closed-source provider drift is a limitation. The paper pins the access window
+to May 4-25, 2026.

@@ -22,7 +22,9 @@ Options:
   --python VERSION        Python version for uv venv (default: 3.11)
   --extras EXTRAS         Python extras to install, comma-separated (default: dev)
                            Use "base" or "none" for no extras.
-                           Common values: dev, dev,hf,analysis, dev,hf,analysis,irt
+                           Common values: dev, dev,hf,analysis,
+                           dev,hf,analysis,models,providers,
+                           dev,hf,analysis,irt
   --yes, -y               Pass non-interactive yes to conda env creation/update
   --dry-run               Print commands without creating or modifying environments
   --allow-active-conda    Allow uv setup while CONDA_PREFIX is set

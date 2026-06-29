@@ -220,7 +220,7 @@ def starter_dataset_spec(
     key = sanitize_dataset_name(dataset_id)
     spec: dict[str, Any] = {
         "hf_repo": dataset_id,
-        "split": split or "REVIEW_SPLIT",
+        "split": split or "unspecified",
         "license": license or "REVIEW_LICENSE",
         "audited_n": "REVIEW_N",
         "facets": list(candidate_facets) or ["REVIEW_FACET"],

@@ -34,5 +34,5 @@ The public release audit checks manifest coverage, compact numeric artifact
 consistency, image-screen sanitization, credential scans, and conda/uv setup
 documentation. Raw upstream datasets, provider outputs, local API caches, and
 large posterior traces are intentionally omitted from `v0.0.1`. Per-item judge
-labels, judge prompts, and calibration-dialog transcripts are likewise deferred
-to the expanded artifact release after review.
+labels, historical judge prompt transcripts, and calibration-dialog transcripts
+are likewise deferred to the expanded artifact release after review.

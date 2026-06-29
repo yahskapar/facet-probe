@@ -58,11 +58,11 @@ but they remain explicit follow-on work for `v1.0.0`:
 - full permutation manifests / permutation indices,
 - normalized trial outputs and raw model outputs,
 - aggregation scripts for every paper table and figure,
-- full prompt templates and judge prompt templates,
-- production dataset loaders for the 12 paper datasets and more model-adapter examples,
+- historical full prompt dumps and judge prompt transcripts,
+- expanded dataset-adapter templates and more model-adapter examples,
 - per-cell flip/OSI tables, bootstrap intervals, and other diagnostic CSVs,
 - full posterior traces and per-parameter posterior CSVs where storage permits,
-- per-item judge labels, full judge prompts, and calibration-dialog transcripts.
+- per-item judge labels, historical full judge prompts, and calibration-dialog transcripts.
 
 These are deferred because they require additional provider-output review,
 dataset-license review, storage planning, or content-redaction work. The

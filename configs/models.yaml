@@ -156,3 +156,29 @@ models:
     hf_repo: google/medgemma-27b-it
     dtype: bfloat16
     load_in_4bit: true
+
+judges:
+  mixed-semantic-primary:
+    display: Gemini-Pro primary semantic-equivalence judge
+    family: Gemini
+    cluster: judge
+    provider: Google
+    api_model_id: gemini-3.1-pro-preview
+    api_key_env: GOOGLE_API_KEY
+    role: mixed_modality_semantic_equivalence
+    max_output_tokens: 512
+    temperature: 0
+    top_p: 1
+    note: Primary mixed-modality semantic judge used for paper-style sem_flip scoring.
+
+  mixed-semantic-cross-vendor-openai:
+    display: ChatGPT cross-vendor semantic-equivalence judge
+    family: ChatGPT
+    cluster: judge
+    provider: OpenAI
+    api_model_id: gpt-5-4-mini
+    api_key_env: OPENAI_API_KEY
+    role: mixed_modality_semantic_equivalence_cross_check
+    max_output_tokens: 512
+    reasoning_effort: medium
+    note: Cross-vendor mixed-modality semantic judge option for Gemini-audited cells.

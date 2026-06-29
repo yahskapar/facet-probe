@@ -75,7 +75,9 @@ Model adapters are intentionally thin in this release. A model adapter needs to:
 - preserve raw output for audit,
 - write normalized trial JSONL records.
 
-Closed-source adapters should record provider model IDs and access dates. Open-weight adapters should record the HuggingFace repo, dtype, quantization, and generation kwargs.
+Closed-source adapters should record provider model IDs and access dates.
+Open-weight adapters should record the HuggingFace repo, dtype, quantization,
+and generation kwargs.
 
 Use `facet-probe check-env --providers ...` before closed-source runs. The
 checker reports only whether required variables are set; it never prints key

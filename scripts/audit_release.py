@@ -22,6 +22,11 @@ from typing import Any
 
 import yaml
 
+try:
+    import tomllib
+except ModuleNotFoundError:  # pragma: no cover - Python 3.10 compatibility
+    import tomli as tomllib  # type: ignore[no-redef]
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
@@ -872,8 +877,9 @@ def check_arxiv_release_scope_alignment(all_tex: str) -> Check:
         "full permutation manifests",
         "normalized trial outputs",
         "aggregation scripts",
-        "prompt templates",
-        "production dataset loaders",
+        "historical full prompt dumps",
+        "judge prompt transcripts",
+        "expanded adapter examples",
         "model-adapter examples",
         "per-cell diagnostic tables",
         "per-item judge labels",
@@ -1145,6 +1151,101 @@ def check_setup_options() -> list[Check]:
     return checks
 
 
+def check_ci_workflow() -> list[Check]:
+    path = REPO_ROOT / ".github/workflows/tests.yml"
+    if not path.exists():
+        return [Check("public CI workflow exists", False, "missing")]
+    text = path.read_text(encoding="utf-8")
+    try:
+        workflow = yaml.safe_load(text)
+    except yaml.YAMLError as exc:
+        return [Check("public CI workflow parses", False, str(exc))]
+
+    matrix = (
+        workflow.get("jobs", {})
+        .get("unit", {})
+        .get("strategy", {})
+        .get("matrix", {})
+        .get("python-version", [])
+    )
+    required_versions = {"3.10", "3.11", "3.12"}
+    version_set = {str(version) for version in matrix}
+    markers = [
+        'pip install -e ".[dev]"',
+        "bash setup.sh conda --dry-run",
+        "bash setup.sh uv --dry-run",
+        "python -m ruff check .",
+        "python -m pytest",
+        "python examples/python_library_usage.py",
+        "python examples/quickstart_profile.py",
+        "facet-probe paper-run",
+        "facet-probe verify-artifacts",
+        "python scripts/audit_release.py --offline-only",
+        "python -m build",
+    ]
+    missing = [marker for marker in markers if marker not in text]
+    return [
+        Check("public CI workflow parses", isinstance(workflow, dict), rel(path)),
+        Check(
+            "public CI covers supported Python versions",
+            required_versions <= version_set,
+            "versions=" + ",".join(sorted(version_set)),
+        ),
+        Check(
+            "public CI runs release gates",
+            not missing,
+            "missing=" + (", ".join(missing) if missing else "none"),
+        ),
+    ]
+
+
+def check_packaging_metadata() -> list[Check]:
+    path = REPO_ROOT / "pyproject.toml"
+    data = tomllib.loads(path.read_text(encoding="utf-8"))
+    project = data.get("project", {})
+    hatch = data.get("tool", {}).get("hatch", {}).get("build", {}).get("targets", {})
+    wheel = hatch.get("wheel", {})
+    force_include = wheel.get("force-include", {})
+    sdist_include = set(hatch.get("sdist", {}).get("include", []))
+    required_sdist = {
+        "/src",
+        "/tests",
+        "/configs",
+        "/artifacts",
+        "/docs",
+        "/examples",
+        "/scripts",
+        "/README.md",
+        "/LICENSE",
+        "/pyproject.toml",
+    }
+    missing_sdist = sorted(required_sdist - sdist_include)
+    package_ok = (
+        project.get("name") == "facet-probe"
+        and project.get("version") == "0.0.1"
+        and project.get("license") == "Apache-2.0"
+        and project.get("scripts", {}).get("facet-probe") == "facet_probe.cli:main"
+    )
+    return [
+        Check(
+            "package metadata defines public CLI",
+            package_ok,
+            rel(path),
+        ),
+        Check(
+            "wheel includes release configs and artifacts",
+            force_include.get("configs") == "facet_probe/release/configs"
+            and force_include.get("artifacts") == "facet_probe/release/artifacts",
+            "force_include=" + str(force_include),
+        ),
+        Check(
+            "sdist includes release source tree",
+            not missing_sdist,
+            "missing=" + (", ".join(missing_sdist) if missing_sdist else "none"),
+        ),
+    ]
+
+
 def check_reproducibility_matrix() -> list[Check]:
     path = REPO_ROOT / "artifacts/reproducibility_matrix.md"
     if not path.exists():
@@ -1194,8 +1295,9 @@ def check_arxiv_audit_report() -> list[Check]:
         "Deferred Full-Release Items",
         "full permutation manifests",
         "normalized trial outputs",
-        "prompt templates",
-        "production dataset loaders",
+        "historical full prompt dumps",
+        "judge prompt transcripts",
+        "expanded dataset-adapter templates",
         "model-adapter examples",
         "per-item judge labels",
     ]
@@ -1211,11 +1313,12 @@ def check_arxiv_audit_report() -> list[Check]:
 
 def check_public_facing_language() -> list[Check]:
     hits = []
+    local_area = "work" + "space"
     patterns = [
         "For " + "authors" + " or " + "review" + "ers",
-        "private paper" + " workspace",
-        "local paper" + " workspace",
-        "paper" + " workspace",
+        "private paper " + local_area,
+        "local paper " + local_area,
+        "paper " + local_area,
         "full " + "local `EMNLP" + "_2026`",
         "arxiv" + "_latest" + "_post_finalization",
         "--source" + "-root",
@@ -1230,7 +1333,7 @@ def check_public_facing_language() -> list[Check]:
                 hits.append(f"{rel(path)}:{pattern}")
     return [
         Check(
-            "public text avoids private-workspace instructions",
+            "public text avoids non-public local-context instructions",
             not hits,
             "hits=" + (", ".join(hits[:20]) if hits else "none"),
         )
@@ -1250,6 +1353,8 @@ def run_audit(
     checks.extend(check_screen_sanitization())
     checks.extend(check_secrets())
     checks.extend(check_setup_options())
+    checks.extend(check_ci_workflow())
+    checks.extend(check_packaging_metadata())
     checks.extend(check_reproducibility_matrix())
     checks.extend(check_arxiv_audit_report())
     checks.extend(check_public_facing_language())

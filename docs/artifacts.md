@@ -11,18 +11,18 @@ human-readable table with the relevant verification commands.
 
 ## Release Boundary
 
-The arXiv source uses "planned full code release" language for several large or
-provider-sensitive objects. This initial public artifact release does not ship
-raw provider caches, upstream dataset content, full normalized model-output
-JSONL, full permutation-index dumps, full prompt text, multi-gigabyte posterior
-traces, or full per-cell diagnostic tables unless a file is explicitly listed in
-`configs/release_artifacts.yaml`.
+The arXiv source describes several large or provider-sensitive objects. This
+initial public artifact release does not ship raw provider caches, upstream
+dataset content, full normalized model-output JSONL, full permutation-index
+dumps, historical per-call prompt text,
+multi-gigabyte posterior traces, or full per-cell diagnostic tables unless a
+file is explicitly listed in `configs/release_artifacts.yaml`.
 
 Instead, the release ships compact, sanitized artifacts that reproduce the
 paper's reported aggregate numbers, plus provenance notes and public checks for
-the shipped artifact set. This is OK for `v0.0.1` because the public release is
-an audit-and-reproduction bundle for the reported aggregate results, not a
-redistribution of upstream datasets or provider responses.
+the shipped artifact set. This boundary is intentional for `v0.0.1`: the public
+release is an audit-and-reproduction bundle for the reported aggregate results,
+not a redistribution of upstream datasets or provider responses.
 
 ## Planned Full-Release Items
 
@@ -33,8 +33,8 @@ constraints are cleared:
 - full permutation manifests / permutation indices,
 - normalized trial outputs and raw model outputs,
 - aggregation scripts for all paper tables and figures,
-- prompt templates and judge prompt templates,
-- production dataset loaders for the 12 paper datasets and more model-adapter examples,
+- historical full prompt dumps and judge prompt transcripts,
+- expanded adapter examples beyond the included paper-profile loaders,
 - per-cell diagnostic tables and bootstrap intervals,
 - per-item judge labels and calibration-dialog transcripts.
 
@@ -53,16 +53,20 @@ constraints are cleared:
 - `artifacts/diagnostics/calibration_mechanism_summary.csv`: compact Q6 calibration and mechanism-classification values.
 - `artifacts/diagnostics/llm_judge_validation.csv`: compact LLM-judge agreement and MMQA gold-anchor validation values.
 
-Per-item judge labels, judge prompts, calibration-dialog transcripts, and raw
-model outputs are not shipped in `v0.0.1`; they are listed as expanded-release
-items because they require provider-output review and prompt/content redaction.
+Per-item judge labels, historical judge prompt transcripts, calibration-dialog
+transcripts, and raw model outputs are not shipped in `v0.0.1`; they are listed
+as expanded-release items because they require provider-output review and
+prompt/content redaction.
 
 ## Screens
 
 - `artifacts/screens/imageset_position_reference_screen.csv`: sanitized item IDs and screen labels.
-- `artifacts/screens/imageset_position_reference_screen_summary.json`: methodology, classification rules, and summary counts.
+- `artifacts/screens/imageset_position_reference_screen_summary.json`: methodology,
+  classification rules, and summary counts.
 
-The non-public human-review screen included full question text, answer choices, and rationales. Those fields are omitted here to avoid redistributing upstream dataset content.
+The non-public human-review screen included full question text, answer choices,
+and rationales. Those fields are omitted here to avoid redistributing upstream
+dataset content.
 
 ## ODI
 
@@ -78,7 +82,8 @@ The multi-gigabyte `idata.nc` and `raw_multitrace.pkl` posterior traces are inte
 - `artifacts/robustness/decoder_decomp_screened_by_facet.csv`: screened same-ordering vs cross-ordering decomposition.
 - `artifacts/mitigation/policy_means.csv`: screened mitigation policy means.
 - `artifacts/mitigation/mitigation_screened_values.json`: full screened mitigation summary values.
-- `artifacts/mitigation/cta_flip_summary.csv`: compact baseline-vs-CTA cells for Figure 4a and the MedXpertQA CTA+multi-pass anti-synergy claim.
+- `artifacts/mitigation/cta_flip_summary.csv`: compact baseline-vs-CTA cells for
+  Figure 4a and the MedXpertQA CTA+multi-pass anti-synergy claim.
 - `artifacts/mitigation/think_budget_sweep.csv`: compact hard/easy Gemini think-budget sweep cells for Figure 4b.
 
 The uncertainty-clean MedXpertQA CTA subset is discussed in the paper text, but

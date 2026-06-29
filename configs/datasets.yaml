@@ -93,6 +93,7 @@ datasets:
 
   mramg:
     hf_repo: MRAMG/MRAMG-Bench
+    split: file-backed
     files: [recipe_mqa.jsonl, doc_recipe.jsonl, IMAGE.zip]
     license: CC-BY-4.0
     audited_n: 197
@@ -101,6 +102,7 @@ datasets:
 
   mmdocrag:
     hf_repo: MMDocIR/MMDocRAG
+    split: file-backed
     files: [dev_15.jsonl, images.zip]
     license: Apache-2.0
     audited_n: 200

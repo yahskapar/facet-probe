@@ -36,10 +36,15 @@ Please keep changes scoped and include tests for:
 - metric aggregation changes,
 - manifest generation changes,
 - provider environment checks,
+- paper-run execution and report outputs,
 - artifact manifest or release-audit changes.
 
-Do not add upstream dataset text, images, prompts, API keys, local caches, or raw provider logs to the repo. Use stable IDs and derived/sanitized artifacts instead.
+Do not add upstream dataset text, images, prompts, API keys, local caches, or
+raw provider logs to the repo. Use stable IDs and derived/sanitized artifacts
+instead.
 
 ## New Datasets
 
-Add the dataset to `configs/datasets.yaml`, document license and split information, and expose a loader or trial JSONL adapter. Non-commercial datasets should be clearly marked.
+Add the dataset to `configs/datasets.yaml`, document license and split
+information, and expose a loader or trial JSONL adapter. Non-commercial
+datasets should be clearly marked.

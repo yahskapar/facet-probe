@@ -14,10 +14,19 @@ from facet_probe.artifacts import verify_release_artifacts
 from facet_probe.datasets import list_paper_datasets
 from facet_probe.facets import FACETS, get_facet, sample_permutations
 from facet_probe.hf_inspect import inspect_hf_dataset
+from facet_probe.judging import judge_mixed_trials
 from facet_probe.manifests import trial_manifest_rows
 from facet_probe.metrics import audit_records, read_jsonl, summarize_groups, write_csv, write_json
+from facet_probe.profiles import (
+    EvaluationProfile,
+    ModelProfile,
+    judge_profile,
+    model_profile,
+    paper_profile,
+)
 from facet_probe.providers import PROVIDERS, provider_env_status
 from facet_probe.reports import write_evaluation_report
+from facet_probe.runner import execute_profile
 from facet_probe.validation import validate_audit_items
 
 
@@ -142,6 +151,231 @@ def _cmd_inspect_hf(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_paper_run(args: argparse.Namespace) -> int:
+    profile = paper_profile(
+        config_dir=args.config_dir,
+        model_config=args.model_config,
+        models=args.models,
+        datasets=args.datasets,
+        k=args.k,
+        seed=args.seed,
+        name=args.name,
+    )
+
+    extra_models = []
+    for hf_model in args.hf_model:
+        extra_models.append(model_profile("huggingface", hf_model))
+    if args.mock_model:
+        extra_models.append(model_profile("mock", args.mock_model))
+    if args.provider or args.api_model:
+        if not args.provider or not args.api_model:
+            raise ValueError("--provider and --api-model must be supplied together")
+        generation = {"endpoint_url": args.endpoint_url} if args.endpoint_url else None
+        extra_models.append(
+            model_profile(
+                args.provider,
+                args.api_model,
+                api_key_env=args.api_key_env,
+                generation=generation,
+            )
+        )
+    if extra_models:
+        if args.models:
+            profile = profile.add_models(*extra_models)
+        else:
+            profile = profile.only_models(*extra_models)
+
+    plan = _paper_run_plan(profile, prepare_only=args.prepare_only)
+    if args.output_dir:
+        files = _write_paper_run_dir(Path(args.output_dir), profile, plan)
+        plan["files"] = files
+    elif not args.prepare_only:
+        raise ValueError("--output-dir is required unless --prepare-only is set")
+
+    if not args.prepare_only:
+        run_status = execute_profile(
+            profile,
+            args.output_dir,
+            items_jsonl=args.items_jsonl,
+            item_facet=args.item_facet,
+            limit_items=args.limit_items,
+            limit_trials=args.limit_trials,
+            streaming=not args.no_streaming,
+            include_raw_outputs=not args.no_raw_outputs,
+            max_new_tokens=args.max_new_tokens,
+            allow_partial=args.allow_partial,
+        )
+        plan = {
+            "status": run_status["status"],
+            "profile": profile.to_dict(),
+            "provider_status": profile.provider_status(),
+            "summary": _load_json(run_status["files"]["summary"]),
+            "files": {**plan.get("files", {}), **run_status["files"]},
+            "skipped_row_counts": run_status["skipped_row_counts"],
+            "shortfalls": run_status["shortfalls"],
+        }
+        if args.judge_mixed:
+            records = read_jsonl(run_status["files"]["trials"])
+            judge = _judge_model_from_args(
+                args,
+                provider_attr="judge_provider",
+                api_model_attr="judge_api_model",
+                api_key_env_attr="judge_api_key_env",
+                endpoint_url_attr="judge_endpoint_url",
+            )
+            _raise_if_missing_env(judge, role="judge")
+            judge_output_dir = args.judge_output_dir or str(
+                Path(args.output_dir) / "mixed_semantic_judge"
+            )
+            judge_status = judge_mixed_trials(
+                records,
+                output_dir=judge_output_dir,
+                judge_model=judge,
+                max_new_tokens=args.judge_max_new_tokens,
+                limit_items=args.judge_limit_items,
+            )
+            plan["mixed_semantic_judge"] = judge_status
+    print(json.dumps(plan, indent=2, sort_keys=True))
+    return 0
+
+
+def _cmd_judge_mixed(args: argparse.Namespace) -> int:
+    records = read_jsonl(args.trials_jsonl)
+    judge = None
+    if not args.mock_judge:
+        judge = _judge_model_from_args(args)
+        _raise_if_missing_env(judge, role="judge")
+    output_dir = args.output_dir or str(Path(args.trials_jsonl).parent / "mixed_semantic_judge")
+    status = judge_mixed_trials(
+        records,
+        output_dir=output_dir,
+        judge_model=judge,
+        mock_judge=args.mock_judge,
+        max_new_tokens=args.max_new_tokens,
+        limit_items=args.limit_items,
+    )
+    print(json.dumps(status, indent=2, sort_keys=True))
+    return 0
+
+
+def _judge_model_from_args(
+    args: argparse.Namespace,
+    *,
+    provider_attr: str = "provider",
+    api_model_attr: str = "api_model",
+    api_key_env_attr: str = "api_key_env",
+    endpoint_url_attr: str = "endpoint_url",
+) -> ModelProfile:
+    provider = getattr(args, provider_attr)
+    api_model = getattr(args, api_model_attr)
+    api_key_env = getattr(args, api_key_env_attr)
+    endpoint_url = getattr(args, endpoint_url_attr)
+    if provider or api_model:
+        if not provider or not api_model:
+            raise ValueError("--provider and --api-model must be supplied together")
+        generation = {"endpoint_url": endpoint_url} if endpoint_url else None
+        return model_profile(
+            provider,
+            api_model,
+            api_key_env=api_key_env,
+            generation=generation,
+        )
+    return judge_profile(
+        config_dir=args.config_dir,
+        judge_config=args.judge_config,
+        name=args.judge,
+    )
+
+
+def _raise_if_missing_env(model: ModelProfile, *, role: str) -> None:
+    status = model.env_status()
+    missing = [
+        key
+        for key, ok in dict(status.get("required_env", {})).items()
+        if not ok
+    ]
+    if missing:
+        raise RuntimeError(
+            f"{role} profile {model.name!r} requires environment variable(s): "
+            f"{', '.join(missing)}"
+        )
+
+
+def _paper_run_plan(profile: EvaluationProfile, *, prepare_only: bool) -> dict[str, object]:
+    status = "prepared" if prepare_only else "ready_to_execute"
+    return {
+        "status": status,
+        "profile": profile.to_dict(),
+        "provider_status": profile.provider_status(),
+        "next_steps": [
+            "inspect run_profile.json, models.jsonl, and datasets.jsonl",
+            "rerun without --prepare-only to execute this profile",
+            "review manifest.jsonl, trials.jsonl, summary.json, and report/",
+        ],
+    }
+
+
+def _write_paper_run_dir(
+    output_dir: Path,
+    profile: EvaluationProfile,
+    plan: dict[str, object],
+) -> dict[str, str]:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    files = {
+        "run_profile": output_dir / "run_profile.json",
+        "provider_status": output_dir / "provider_status.json",
+        "models": output_dir / "models.jsonl",
+        "datasets": output_dir / "datasets.jsonl",
+        "readme": output_dir / "README.md",
+    }
+    write_json(files["run_profile"], profile.to_dict())
+    write_json(files["provider_status"], profile.provider_status())
+    _write_jsonl(str(files["models"]), [model.to_dict() for model in profile.models])
+    _write_jsonl(str(files["datasets"]), [dataset.to_dict() for dataset in profile.datasets])
+    files["readme"].write_text(_paper_run_readme(profile), encoding="utf-8")
+    return {name: str(path) for name, path in files.items()}
+
+
+def _paper_run_readme(profile: EvaluationProfile) -> str:
+    return "\n".join(
+        [
+            "# Facet-Probe Paper Run",
+            "",
+            "This directory contains a Facet-Probe paper-benchmark run.",
+            "",
+            f"- Profile: `{profile.name}`",
+            f"- Models: {len(profile.models)}",
+            f"- Datasets: {len(profile.datasets)}",
+            f"- K orderings: {profile.k_orderings}",
+            f"- Seed: {profile.seed}",
+            "",
+            "Profile files are written before inference. Completed runs also include:",
+            "",
+            "- `manifest.jsonl`: one row per item/order facet trial.",
+            "- `trials.jsonl`: normalized model outputs and scores.",
+            "- `summary.json` and `group_summary.csv`: aggregate metrics.",
+            "- `report/`: summary, group, item, and manifest report files.",
+            "- `run_status.json`: counts, output paths, and skipped-row diagnostics.",
+            "- `mixed_semantic_judge/`: semantic-equivalence judge outputs when",
+            "  `paper-run --judge-mixed` was used.",
+            "",
+            "You can recompute summaries from `trials.jsonl` with:",
+            "",
+            "```bash",
+            "facet-probe audit-jsonl trials.jsonl \\",
+            "  --summary-json summary.json \\",
+            "  --group-csv group_summary.csv",
+            "facet-probe make-report trials.jsonl --output-dir report",
+            "```",
+            "",
+        ]
+    )
+
+
+def _load_json(path: str) -> object:
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
 def _write_jsonl(path: str | None, rows: list[dict[str, object]]) -> None:
     if path is None:
         for row in rows:
@@ -223,6 +457,79 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--output")
     p.add_argument("--spec-output")
     p.set_defaults(func=_cmd_inspect_hf)
+
+    p = sub.add_parser("paper-run", help="Run or prepare a paper benchmark profile.")
+    p.add_argument("--config-dir", default="configs")
+    p.add_argument("--model-config")
+    p.add_argument("--models", nargs="+")
+    p.add_argument("--datasets", nargs="+")
+    p.add_argument("--hf-model", action="append", default=[])
+    p.add_argument(
+        "--mock-model",
+        help="Developer/CI only: use a deterministic local test adapter.",
+    )
+    p.add_argument("--provider", choices=sorted(PROVIDERS))
+    p.add_argument("--api-model")
+    p.add_argument("--api-key-env")
+    p.add_argument("--endpoint-url")
+    p.add_argument(
+        "--judge-mixed",
+        action="store_true",
+        help="Run the configured mixed-modality semantic judge after inference.",
+    )
+    p.add_argument("--judge-config", help="YAML file containing named judge profiles.")
+    p.add_argument(
+        "--judge",
+        default="mixed-semantic-primary",
+        help="Named judge profile to use with --judge-mixed.",
+    )
+    p.add_argument("--judge-output-dir")
+    p.add_argument("--judge-provider", choices=sorted(PROVIDERS))
+    p.add_argument("--judge-api-model")
+    p.add_argument("--judge-api-key-env")
+    p.add_argument("--judge-endpoint-url")
+    p.add_argument("--judge-max-new-tokens", type=int)
+    p.add_argument("--judge-limit-items", type=int)
+    p.add_argument("--k", type=int)
+    p.add_argument("--seed", type=int)
+    p.add_argument("--name", default="facet-probe-paper-v0.0.1")
+    p.add_argument("--output-dir")
+    p.add_argument("--prepare-only", action="store_true")
+    p.add_argument("--items-jsonl", help="Run normalized AuditItem JSONL instead of HF datasets.")
+    p.add_argument("--item-facet", default="option_order")
+    p.add_argument("--limit-items", type=int)
+    p.add_argument("--limit-trials", type=int)
+    p.add_argument("--no-streaming", action="store_true")
+    p.add_argument("--no-raw-outputs", action="store_true")
+    p.add_argument("--max-new-tokens", type=int)
+    p.add_argument("--allow-partial", action="store_true")
+    p.set_defaults(func=_cmd_paper_run)
+
+    p = sub.add_parser(
+        "judge-mixed",
+        help="Judge mixed-modality free-form outputs for semantic flip.",
+    )
+    p.add_argument("trials_jsonl")
+    p.add_argument("--config-dir", default="configs")
+    p.add_argument("--judge-config", help="YAML file containing named judge profiles.")
+    p.add_argument(
+        "--judge",
+        default="mixed-semantic-primary",
+        help="Named judge profile from configs/models.yaml.",
+    )
+    p.add_argument("--output-dir")
+    p.add_argument(
+        "--mock-judge",
+        action="store_true",
+        help="Developer/CI only: use a deterministic local judge fixture.",
+    )
+    p.add_argument("--provider", choices=sorted(PROVIDERS))
+    p.add_argument("--api-model")
+    p.add_argument("--api-key-env")
+    p.add_argument("--endpoint-url")
+    p.add_argument("--max-new-tokens", type=int)
+    p.add_argument("--limit-items", type=int)
+    p.set_defaults(func=_cmd_judge_mixed)
     return parser
 
 

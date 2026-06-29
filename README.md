@@ -1,17 +1,33 @@
 # Facet-Probe
 
+> [!CAUTION]
+> **NOTE:** This is a very initial (`v0.0.1`) release of the codebase
+> corresponding to the release of the pre-print on arXiv. In order to bring
+> together various pieces of code and evaluation artifacts, coding agents
+> (e.g., Claude Code, OpenAI Codex) were significantly used. Despite high-level
+> validation of various scripts and double-checking that they reproduce results
+> reported in the pre-print, there still may be issues with the code provided
+> as is. As such, please utilize this repo with appropriate caution!
+
 <p align="center">
 Official code and artifact release for<br>
 <strong>Same Evidence, Different Answer: Auditing Order Sensitivity in Multimodal Large Language Models</strong>
 </p>
 
 <p align="center">
-Please star this repo if you find it useful, open an issue if something is unclear, and cite the paper if you use Facet-Probe in research.
+<a href="https://github.com/yahskapar/facet-probe/actions/workflows/tests.yml">
+<img alt="tests" src="https://github.com/yahskapar/facet-probe/actions/workflows/tests.yml/badge.svg">
+</a>
+</p>
+
+<p align="center">
+:fire: Please star this repo if you find it useful, open an issue if you're running into any problems with this repo or have questions, and cite the paper if you reference it or use Facet-Probe in research. :fire:
 </p>
 
 <p align="center">
 <a href="#install">Install</a> |
-<a href="#quick-start">Quick Start</a> |
+<a href="#quickstart">Quickstart</a> |
+<a href="#common-usage">Common Usage</a> |
 <a href="#python-library-usage">Python API</a> |
 <a href="#paper-artifacts">Artifacts</a> |
 <a href="#reproducing-the-release">Reproduction</a> |
@@ -33,14 +49,210 @@ The repo does **not** redistribute upstream dataset text, images, tables, raw
 provider caches, or API credentials. Dataset-backed reproduction loads from the
 original sources under their licenses and terms.
 
+## Quickstart
+
+Install Facet-Probe inside an environment you control:
+
+```bash
+# Existing conda environment
+conda activate my-env
+python -m pip install -e ".[dev,hf,analysis,models,providers]"
+
+# Provided conda environment
+bash setup.sh conda --extras dev,hf,analysis,models,providers
+conda activate facet-probe
+
+# uv environment
+bash setup.sh uv --extras dev,hf,analysis,models,providers
+source .venv/bin/activate
+```
+
+Commands that reference `examples/`, `configs/`, `artifacts/`, or `scripts/`
+assume you are running from the repository root. Package-only installs still
+include the release configs and compact artifacts, but not the repo examples or
+audit script files.
+
+Run the configured paper-profile benchmark for a HuggingFace model:
+
+```bash
+facet-probe paper-run \
+  --hf-model Qwen/Qwen3.5-VL-4B-Instruct \
+  --output-dir runs/qwen-paper
+```
+
+This is a real inference run over the configured paper datasets and facets for
+the selected Qwen model. It does not run every paper model. Use
+`--prepare-only` to write the run profile without loading datasets or calling a
+model, and omit model selectors only when you intentionally want the full
+configured model set.
+
+For a quick development run, restrict the dataset set and item count:
+
+```bash
+facet-probe paper-run \
+  --hf-model Qwen/Qwen3.5-VL-4B-Instruct \
+  --datasets mmlu_pro \
+  --limit-items 2 \
+  --output-dir runs/qwen-mmlu-smoke
+```
+
+Run one for a supported closed-source provider:
+
+```bash
+GOOGLE_API_KEY="..." facet-probe paper-run \
+  --provider google \
+  --api-model gemini-3.1-pro-preview \
+  --api-key-env GOOGLE_API_KEY \
+  --output-dir runs/gemini-paper
+```
+
+Run a model set from YAML and change the main benchmark parameters:
+
+```bash
+facet-probe paper-run \
+  --model-config configs/models.yaml \
+  --models gemini-3.1-pro-preview qwen3-5-4b \
+  --k 6 \
+  --seed 42 \
+  --output-dir runs/paper-config
+```
+
+Prepare the full configured paper model/dataset profile without launching it:
+
+```bash
+facet-probe paper-run --output-dir runs/full-paper --prepare-only
+```
+
+Each executed run directory contains `run_profile.json`, `provider_status.json`,
+`models.jsonl`, `datasets.jsonl`, `manifest.jsonl`, `trials.jsonl`,
+`summary.json`, `group_summary.csv`, `run_status.json`, and `report/`.
+The command also prints a compact JSON summary to the terminal. Use
+`--prepare-only` when you only want the reproducible run profile and do not want
+to load datasets or call a model yet. Full paper-profile runs are strict by
+default: if a dataset/facet cannot reach its configured audited item count, the
+command fails instead of reporting a partial run as complete. Use
+`--allow-partial` only for development/debugging. Paper-profile execution uses
+dataset-specific loaders for the configured paper datasets; arbitrary added
+HuggingFace datasets use the generic adapter templates unless you add a custom
+loader. HuggingFace datasets stream by default where supported; use
+`--no-streaming` when you intentionally want normal cached dataset loading.
+File/archive-backed public assets for mixed-modality datasets may still require
+large upstream downloads.
+
+Run generation and the paper-style mixed-modality semantic judge in one command:
+
+```bash
+GOOGLE_API_KEY="..." facet-probe paper-run \
+  --hf-model Qwen/Qwen3.5-VL-4B-Instruct \
+  --output-dir runs/qwen-paper \
+  --judge-mixed
+```
+
+Judge mixed-modality free-form outputs from a completed run:
+
+```bash
+GOOGLE_API_KEY="..." facet-probe judge-mixed runs/qwen-paper/trials.jsonl \
+  --judge mixed-semantic-primary \
+  --output-dir runs/qwen-paper/mixed_semantic_judge
+```
+
+This writes `mixed_semantic_judgments.jsonl`,
+`mixed_semantic_summary.json`, and `mixed_semantic_summary.csv`. The default
+judge profile is `mixed-semantic-primary` from `configs/models.yaml`, which uses
+Gemini-Pro with `GOOGLE_API_KEY`. The input trial file must contain
+`mixed_modality_order` rows. To run a cross-vendor judge instead, use
+`--judge mixed-semantic-cross-vendor-openai` with `OPENAI_API_KEY`, or override
+the config with `--provider`, `--api-model`, and `--api-key-env`.
+
+Use the same profile from Python:
+
+```python
+import facet_probe as fp
+
+profile = fp.paper_profile(
+    config_dir="configs",
+    models=["gemini-3.1-pro-preview", "qwen3-5-4b"],
+)
+judge = fp.judge_profile(config_dir="configs")
+print(profile.k_orderings, profile.seed, len(profile.datasets), judge.name)
+```
+
+Add a new HuggingFace dataset:
+
+```bash
+facet-probe inspect-hf allenai/ai2_arc --config ARC-Challenge --split validation --emit-spec
+```
+
+```python
+new_dataset = fp.hf_dataset(
+    "allenai/ai2_arc",
+    name="arc_challenge",
+    config="ARC-Challenge",
+    split="validation",
+    facets=["option_order"],
+)
+custom_only = profile.only_datasets(new_dataset, name="arc-challenge-only")
+paper_plus_custom = profile.add_datasets(new_dataset, name="paper-plus-arc-challenge")
+```
+
+Create a manifest for model adapters:
+
+```python
+row = {
+    "id": "demo-001",
+    "question": "Which option is the target color?",
+    "choices": ["red", "blue", "green", "yellow"],
+    "answer": "2",
+}
+item = fp.mcq_audit_item(row, dataset=new_dataset.name)
+fp.validate_audit_items([item], facet="option_order", k=custom_only.k_orderings)
+
+manifest = fp.trial_manifest_rows(
+    [item],
+    facet="option_order",
+    k=custom_only.k_orderings,
+    seed=custom_only.seed,
+    include_ordered_components=True,
+)
+
+prompt = fp.render_ordered_text_prompt(
+    item,
+    manifest[0]["ordered_component_ids"],
+    question=row["question"],
+    resolve_content=lambda component: component.content_ref,
+)
+
+print(custom_only.name, paper_plus_custom.name, len(manifest))
+```
+
+See the same objects printed without downloading models or calling APIs:
+
+```bash
+python examples/quickstart_profile.py
+```
+
+## Release Checklist
+
+This checklist tracks the public release state and follow-on milestones.
+
+- [x] `v0.0.1` initial public code and evaluation artifacts release.
+- [ ] Further validation and testing of `v0.0.1` release
+- [ ] Expand dataset-adapter templates and add more model-adapter examples.
+- [ ] Publicly release expanded evaluation artifacts.
+- [ ] Update and release Facet-Probe `v1.0.0`.
+
 ## Release Contents
 
-- `src/facet_probe/`: permutation, scoring, metrics, manifest, provider-env, artifact, and dataset-registry code.
+- `src/facet_probe/`: permutation, scoring, metrics, manifest, runner, semantic judging, provider-env, artifact, and dataset-registry code.
 - `configs/`: dataset, model, facet, ordering, and release-artifact manifests.
 - `artifacts/`: sanitized aggregate tables, compact ODI outputs, robustness, mitigation, screens, and provenance notes.
+- Packaged wheels include a read-only copy of `configs/` and `artifacts/` so
+  installed CLI/API calls can still load the public release profile and verify
+  compact artifacts outside a repo checkout.
 - `scripts/audit_release.py`: offline release audit for manifest coverage, artifact consistency, sanitization, and secret scans.
 - `examples/toy_items.jsonl`: minimal canonical item file for trying bulk manifest generation.
 - `examples/python_library_usage.py`: minimal import-based Python API example.
+- `examples/quickstart_profile.py`: validated profile-driven paper/custom dataset quickstart.
 - `tests/`: unit tests for the public contracts.
 
 ## Install
@@ -102,16 +314,21 @@ uv pip install "facet-probe @ git+https://github.com/yahskapar/facet-probe.git@v
 For conda users, activate the conda environment first and then run the
 `python -m pip install ...` command inside it.
 
-After a PyPI release, installation becomes:
+When maintainers publish a later package-index release, installation becomes:
 
 ```bash
 python -m pip install facet-probe
 uv pip install facet-probe
 ```
 
-Maintainers can publish a package-index release by building wheel/sdist
-artifacts from this repo and uploading them to PyPI, preferably first to
-TestPyPI:
+The wheel includes the release configs and compact artifacts, so
+`facet-probe verify-artifacts` and `facet_probe.paper_profile()` work even when
+called outside a cloned repository. Full reruns still download upstream datasets
+and call local/API models at runtime.
+
+That PyPI step is not required for the `v0.0.1` GitHub release. Maintainers can
+publish a package-index release by building wheel/sdist artifacts from this repo
+and uploading them to PyPI, preferably first to TestPyPI:
 
 ```bash
 python -m build
@@ -122,7 +339,7 @@ python -m twine upload dist/*
 package is a separate conda-forge-style release path and is not required for
 people to install Facet-Probe inside conda environments.
 
-## Quick Start
+## Common Usage
 
 List the paper facets and datasets:
 
@@ -155,11 +372,15 @@ Inspect a HuggingFace dataset and emit a starter dataset spec:
 facet-probe inspect-hf TIGER-Lab/MMLU-Pro --split test --sample 20 --emit-spec
 ```
 
+This command requires the `hf` extra and network access.
+
 Check provider environment variables without printing secret values:
 
 ```bash
 facet-probe check-env --providers google openai anthropic
 ```
+
+The command exits non-zero when a required provider variable is missing.
 
 Verify the included aggregate artifacts:
 
@@ -245,15 +466,15 @@ To cross-check the release against the public arXiv source bundle:
 
 ```bash
 python scripts/audit_release.py --arxiv-zip path/to/arxiv_source.zip
+python scripts/audit_release.py --arxiv-source path/to/extracted/arxiv_source
 ```
 
 The public release is self-contained for the shipped artifact claims: it
 includes the compact tables, screen summaries, ODI summaries, provenance notes,
 configs, and verification code needed to inspect the arXiv aggregate results.
-It intentionally does not require a private parent workspace. Full raw reruns
-still require upstream datasets and model/API access under their original terms,
-so raw provider outputs and upstream content are listed as future expanded
-artifacts rather than redistributed in `v0.0.1`.
+Full raw reruns require upstream datasets and model/API access under their
+original terms, so raw provider outputs and upstream content are listed as
+future expanded artifacts rather than redistributed in `v0.0.1`.
 
 The release audit checks that all shipped artifacts are manifest-listed, compact
 numeric artifacts match expected paper values, sanitized screens omit upstream
@@ -262,16 +483,6 @@ appear in text files.
 
 Provider credentials are read only from environment variables. Start from
 `.env.example` and never commit a filled `.env` file.
-
-## Release Checklist
-
-This checklist tracks the public release state and the most useful follow-on
-milestones.
-
-- [x] `v0.0.1` initial public code and evaluation artifacts release.
-- [ ] Add production dataset loaders and more model-adapter examples.
-- [ ] Publicly release expanded evaluation artifacts: full permutation manifests, normalized trial outputs, aggregation scripts, prompt templates, judge outputs, and per-cell diagnostic tables.
-- [ ] Update and release the full `v1.0.0` version of Facet-Probe.
 
 ## Method Notes
 
@@ -288,14 +499,17 @@ For `image_set_order`, clean paper summaries apply a position-reference screen:
 items whose true gold answer moves when images are permuted are excluded from
 clean image-set estimates.
 
-For `mixed_modality_order`, free-form outputs are scored through structured
-LLM-judge gold-match labels and reported with the caveats in the paper and
-`docs/artifacts.md`.
+For `mixed_modality_order`, the paper artifacts report the structured
+LLM-judge/semantic-flip summaries described in the paper and
+`docs/artifacts.md`. The public runner can generate new mixed-modality
+judgments with `facet-probe judge-mixed` or `paper-run --judge-mixed`. The
+historical full judged raw-output release remains a planned expanded artifact.
 
 ## Extending Facet-Probe
 
-New datasets can be added through `configs/datasets.yaml` and the dataset
-registry in `src/facet_probe/datasets.py`. The minimum contract is:
+New datasets can be added through `configs/datasets.yaml`, the dataset metadata
+helpers in `src/facet_probe/datasets.py`, and, when needed, a loader or template
+that maps upstream rows to `AuditItem` objects. The minimum contract is:
 
 - a list of orderable units for the target facet,
 - a deterministic item ID,
@@ -320,6 +534,9 @@ adapters should record the HuggingFace repo, dtype, quantization, generation
 kwargs, and access date.
 
 ## Citation
+
+`CITATION.cff` is repo metadata for GitHub and citation managers; its
+preferred citation is the same paper citation shown here.
 
 ```bibtex
 @article{paruchuri2026same,

@@ -45,6 +45,11 @@ PROVIDERS: dict[str, ProviderSpec] = {
         optional_env=("HF_TOKEN", "HF_HOME"),
         notes="Open-weight local inference or gated HuggingFace downloads.",
     ),
+    "mock": ProviderSpec(
+        name="mock",
+        required_env=(),
+        notes="Deterministic local adapter for smoke tests and artifact validation.",
+    ),
 }
 
 

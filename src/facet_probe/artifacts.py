@@ -5,11 +5,17 @@ from __future__ import annotations
 import csv
 import json
 from dataclasses import dataclass
+from importlib.resources import files
+from importlib.resources.abc import Traversable
 from pathlib import Path
 from typing import Any
 
+ReleasePath = Path | Traversable
+
 
 def repo_root() -> Path:
+    """Return the source checkout root when running from a repo tree."""
+
     here = Path(__file__).resolve()
     candidates = [Path.cwd(), *here.parents]
     for candidate in candidates:
@@ -18,8 +24,22 @@ def repo_root() -> Path:
     return here.parents[2]
 
 
-def artifact_path(*parts: str) -> Path:
-    return repo_root() / "artifacts" / Path(*parts)
+def release_data_root() -> ReleasePath:
+    """Return release data from a checkout, or from packaged wheel resources."""
+
+    here = Path(__file__).resolve()
+    candidates = [Path.cwd(), *here.parents]
+    for candidate in candidates:
+        if (candidate / "artifacts").exists() and (candidate / "configs").exists():
+            return candidate
+    return files("facet_probe") / "release"
+
+
+def artifact_path(*parts: str) -> ReleasePath:
+    path: ReleasePath = release_data_root() / "artifacts"
+    for part in parts:
+        path = path / part
+    return path
 
 
 def load_json(*parts: str) -> Any:
@@ -27,7 +47,7 @@ def load_json(*parts: str) -> Any:
 
 
 def load_csv(*parts: str) -> list[dict[str, str]]:
-    with open(artifact_path(*parts), newline="", encoding="utf-8") as f:
+    with artifact_path(*parts).open(newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
 
 
