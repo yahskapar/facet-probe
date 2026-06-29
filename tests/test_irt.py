@@ -113,6 +113,38 @@ def test_write_irt_fit_dry_run_prepares_exported_rows(tmp_path):
     assert Path(status["files"]["fit_summary_json"]).exists()
 
 
+def test_write_irt_fit_dry_run_accepts_raw_trials_jsonl(tmp_path):
+    trials = tmp_path / "trials.jsonl"
+    trials.write_text(
+        "\n".join(
+            json.dumps(row)
+            for row in [
+                _trial("i1", 0, "A", True, model="m1"),
+                _trial("i1", 1, "A", True, model="m1"),
+                _trial("i1", 0, "B", False, model="m2"),
+                _trial("i1", 1, "B", False, model="m2"),
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    status = write_irt_fit(
+        trials,
+        tmp_path / "irt_fit",
+        outcome="modal",
+        dry_run=True,
+    )
+
+    assert status["status"] == "prepared"
+    assert status["source_type"] == "trial_jsonl"
+    assert status["input_export"]["summary"]["outcomes"]["modal"]["n_rows"] == 4
+    assert status["input_export"]["summary"]["outcomes"]["correct"]["n_rows"] == 4
+    assert Path(status["files"]["input_export_trials_csv"]).exists()
+    assert Path(tmp_path / "irt_fit" / "irt_input" / "irt_input_trials.csv").exists()
+    assert status["fits"][0]["input_summary"]["n_models"] == 2
+
+
 def test_irt_cli_commands(tmp_path):
     summary_result = run_cli("irt-summary", "--output-dir", str(tmp_path / "released_irt"))
     assert summary_result.returncode == 0, summary_result.stderr
@@ -138,6 +170,8 @@ def test_irt_cli_commands(tmp_path):
         str(tmp_path / "irt_input"),
     )
     assert export_result.returncode == 0, export_result.stderr
+    assert "facet-probe irt-export [" in export_result.stderr
+    assert "exporting 3 trial record(s)" in export_result.stderr
     payload = json.loads(export_result.stdout)
     assert payload["summary"]["outcomes"]["modal"]["n_rows"] == 3
     irt_csv = tmp_path / "irt_input" / "irt_input_trials.csv"
@@ -151,10 +185,38 @@ def test_irt_cli_commands(tmp_path):
         "--dry-run",
     )
     assert fit_result.returncode == 0, fit_result.stderr
+    assert "facet-probe irt-fit [" in fit_result.stderr
+    assert "preparing outcome=modal" in fit_result.stderr
     fit_payload = json.loads(fit_result.stdout)
     assert fit_payload["status"] == "prepared"
     assert fit_payload["fits"][0]["outcome"] == "modal"
     assert (tmp_path / "irt_fit" / "irt_fit_summary.json").exists()
+
+    direct_fit_result = run_cli(
+        "irt-fit",
+        str(trials),
+        "--output-dir",
+        str(tmp_path / "irt_fit_direct"),
+        "--dry-run",
+    )
+    assert direct_fit_result.returncode == 0, direct_fit_result.stderr
+    assert "facet-probe irt-fit [" in direct_fit_result.stderr
+    direct_payload = json.loads(direct_fit_result.stdout)
+    assert direct_payload["status"] == "prepared"
+    assert direct_payload["source_type"] == "trial_jsonl"
+    assert (tmp_path / "irt_fit_direct" / "irt_input" / "irt_input_trials.csv").exists()
+
+    alias_fit_result = run_cli(
+        "irt-fit",
+        str(trials),
+        "--out-dir",
+        str(tmp_path / "irt_fit_alias"),
+        "--dry-run",
+    )
+    assert alias_fit_result.returncode == 0, alias_fit_result.stderr
+    alias_payload = json.loads(alias_fit_result.stdout)
+    assert alias_payload["status"] == "prepared"
+    assert (tmp_path / "irt_fit_alias" / "irt_fit_summary.json").exists()
 
 
 def _trial(

@@ -9,11 +9,14 @@ from __future__ import annotations
 
 import re
 from collections import Counter, defaultdict
+from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from typing import Any
 from urllib.parse import urlparse
 
 from facet_probe.datasets import infer_candidate_facets
+
+ProgressCallback = Callable[[str], None]
 
 
 @dataclass(frozen=True)
@@ -241,6 +244,7 @@ def inspect_hf_dataset(
     revision: str | None = None,
     sample: int = 20,
     streaming: bool = True,
+    progress_callback: ProgressCallback | None = None,
 ) -> HFInspection:
     """Inspect a HuggingFace dataset.
 
@@ -270,6 +274,7 @@ def inspect_hf_dataset(
     license_name: str | None = None
 
     try:
+        _progress(progress_callback, "loading dataset card metadata")
         info = HfApi().dataset_info(dataset_id, revision=revision)
         tags = list(getattr(info, "tags", None) or [])
         card_data = getattr(info, "cardData", None) or {}
@@ -280,6 +285,7 @@ def inspect_hf_dataset(
         warnings.append(f"dataset card metadata unavailable: {exc}")
 
     try:
+        _progress(progress_callback, "listing dataset configs")
         configs = tuple(get_dataset_config_names(dataset_id, revision=revision))
     except Exception as exc:  # pragma: no cover - depends on remote service
         configs = ()
@@ -287,6 +293,7 @@ def inspect_hf_dataset(
 
     selected_config = config or (configs[0] if len(configs) == 1 else None)
     try:
+        _progress(progress_callback, "listing dataset splits")
         split_kwargs = {"revision": revision} if revision else {}
         splits = tuple(get_dataset_split_names(dataset_id, selected_config, **split_kwargs))
     except Exception as exc:  # pragma: no cover - depends on remote service
@@ -297,6 +304,7 @@ def inspect_hf_dataset(
 
     features = None
     try:
+        _progress(progress_callback, "loading feature schema")
         args = [dataset_id]
         if selected_config:
             args.append(selected_config)
@@ -314,6 +322,10 @@ def inspect_hf_dataset(
     sample_rows: list[dict[str, Any]] = []
     if sample > 0 and selected_split:
         try:
+            _progress(
+                progress_callback,
+                f"loading up to {sample} sample row(s) from split={selected_split}",
+            )
             args = [dataset_id]
             if selected_config:
                 args.append(selected_config)
@@ -328,6 +340,7 @@ def inspect_hf_dataset(
                 if idx >= sample:
                     break
                 sample_rows.append(row)
+            _progress(progress_callback, f"loaded {len(sample_rows)} sample row(s)")
         except Exception as exc:  # pragma: no cover - depends on remote service
             warnings.append(f"sample-row inspection unavailable: {exc}")
 
@@ -346,6 +359,11 @@ def inspect_hf_dataset(
         sample_rows=sample_rows,
         warnings=warnings,
     )
+
+
+def _progress(callback: ProgressCallback | None, message: str) -> None:
+    if callback is not None:
+        callback(message)
 
 
 def _infer_modalities(

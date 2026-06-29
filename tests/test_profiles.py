@@ -69,7 +69,7 @@ def test_closed_and_hf_models_share_common_profile_shape():
     )
     local = fp.model_profile(
         "huggingface",
-        "Qwen/Qwen3.5-VL-4B-Instruct",
+        "Qwen/Qwen3.5-4B",
         dtype="bfloat16",
         load_in_4bit=True,
     )
@@ -78,7 +78,30 @@ def test_closed_and_hf_models_share_common_profile_shape():
     assert local.to_dict()["provider"] == "huggingface"
     assert closed.to_dict().keys() == local.to_dict().keys()
     assert closed.env == ("OPENAI_API_KEY",)
+    assert local.generation["fast_mode"] == "auto"
     assert local.generation["load_in_4bit"] is True
+
+
+def test_qwen35_paper_profiles_use_mmios_hf_repo_names():
+    profile = fp.paper_profile(
+        config_dir=REPO_ROOT / "configs",
+        models=[
+            "qwen3-5-0-8b",
+            "qwen3-5-2b",
+            "qwen3-5-4b",
+            "qwen3-5-9b",
+            "qwen3-5-27b",
+        ],
+        datasets="mmlu_pro",
+    )
+
+    assert [model.hf_repo for model in profile.models] == [
+        "Qwen/Qwen3.5-0.8B",
+        "Qwen/Qwen3.5-2B",
+        "Qwen/Qwen3.5-4B",
+        "Qwen/Qwen3.5-9B",
+        "Qwen/Qwen3.5-27B",
+    ]
 
 
 def test_custom_model_env_status_uses_profile_env(monkeypatch):

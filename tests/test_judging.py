@@ -27,13 +27,21 @@ def test_judge_mixed_trials_mock_writes_semantic_summary(tmp_path):
         _mixed_record("mramg", "model-a", "item-2", 1, "sugar"),
     ]
 
-    status = judge_mixed_trials(records, output_dir=tmp_path, mock_judge=True)
+    messages = []
+    status = judge_mixed_trials(
+        records,
+        output_dir=tmp_path,
+        mock_judge=True,
+        progress_callback=messages.append,
+    )
 
     assert status["status"] == "completed"
     assert status["summary"][0]["sem_flip"] == 0.5
     assert status["summary"][0]["text_flip_upper"] == 0.5
     assert (tmp_path / "mixed_semantic_judgments.jsonl").exists()
     assert (tmp_path / "mixed_semantic_summary.csv").exists()
+    assert any("judging 2 mixed item group" in message for message in messages)
+    assert any("completed judgment 2/2" in message for message in messages)
 
 
 def test_judge_mixed_cli_mock(tmp_path):
@@ -71,6 +79,8 @@ def test_judge_mixed_cli_mock(tmp_path):
     )
 
     assert result.returncode == 0, result.stderr
+    assert "facet-probe judge-mixed [" in result.stderr
+    assert "completed judgment 1/1" in result.stderr
     payload = json.loads(result.stdout)
     assert payload["summary"][0]["sem_flip"] == 1.0
     assert (output / "mixed_semantic_summary.json").exists()

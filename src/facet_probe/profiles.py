@@ -227,7 +227,7 @@ def huggingface_model_profile(
 ) -> ModelProfile:
     """Create a common profile for a local/open-weight HuggingFace adapter."""
 
-    options = {"dtype": dtype, **dict(generation or {})}
+    options = {"dtype": dtype, "fast_mode": "auto", **dict(generation or {})}
     if load_in_4bit is not None:
         options["load_in_4bit"] = load_in_4bit
     return ModelProfile(

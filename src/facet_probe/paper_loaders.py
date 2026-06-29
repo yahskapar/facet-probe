@@ -12,8 +12,11 @@ import gzip
 import inspect
 import io
 import json
+import os
 import random
 import re
+import time
+import warnings
 import zipfile
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from pathlib import Path
@@ -26,6 +29,10 @@ from facet_probe.scoring import normalize_answer
 from facet_probe.templates import content_ref
 
 SEED = 42
+MMLU_PRO_TEST_PARQUET = (
+    "https://huggingface.co/datasets/TIGER-Lab/MMLU-Pro/resolve/main/"
+    "data/test-00000-of-00001.parquet"
+)
 
 
 def load_paper_dataset_examples(
@@ -249,10 +256,71 @@ def _decode_image_field(value: Any) -> Any | None:
     return value if hasattr(value, "save") and hasattr(value, "convert") else None
 
 
-def _load_dataset(*args, **kwargs):
+def _load_dataset_once(*args, **kwargs):
     from datasets import load_dataset  # type: ignore
 
     return load_dataset(*args, **kwargs)
+
+
+def _load_dataset(*args, **kwargs):
+    attempts = max(1, int(os.environ.get("FACET_PROBE_HF_RETRIES", "3")))
+    sleep_seconds = max(0.0, float(os.environ.get("FACET_PROBE_HF_RETRY_SLEEP", "2")))
+    for attempt in range(1, attempts + 1):
+        try:
+            return _load_dataset_once(*args, **kwargs)
+        except Exception as exc:
+            if attempt >= attempts or not _is_transient_hf_error(exc):
+                raise
+            warnings.warn(
+                (
+                    "Facet-Probe: transient HuggingFace dataset load failure "
+                    f"on attempt {attempt}/{attempts}: {exc}. Retrying..."
+                ),
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            if sleep_seconds:
+                time.sleep(sleep_seconds * attempt)
+    raise RuntimeError("unreachable HuggingFace retry state")
+
+
+def _is_transient_hf_error(exc: BaseException) -> bool:
+    text = str(exc).lower()
+    transient_markers = (
+        "504",
+        "gateway time-out",
+        "gateway timeout",
+        "timed out",
+        "timeout",
+        "temporarily unavailable",
+        "502",
+        "503",
+        "connection error",
+        "connection reset",
+    )
+    return any(marker in text for marker in transient_markers)
+
+
+def _load_mmlu_pro_test_dataset(*, streaming: bool):
+    try:
+        return _load_dataset("TIGER-Lab/MMLU-Pro", split="test", streaming=streaming)
+    except Exception as exc:
+        if not _is_transient_hf_error(exc):
+            raise
+        warnings.warn(
+            (
+                "Facet-Probe: HuggingFace timed out while listing TIGER-Lab/MMLU-Pro; "
+                "falling back to the direct public test parquet file."
+            ),
+            RuntimeWarning,
+            stacklevel=2,
+        )
+        return _load_dataset(
+            "parquet",
+            data_files={"test": MMLU_PRO_TEST_PARQUET},
+            split="test",
+            streaming=streaming,
+        )
 
 
 Loader = Callable[..., list[Any]]
@@ -296,7 +364,7 @@ def load_option_order_mmlu_pro(
     streaming: bool = True,
 ) -> list[Any]:
     n = target or 200
-    ds = _load_dataset("TIGER-Lab/MMLU-Pro", split="test", streaming=streaming)
+    ds = _load_mmlu_pro_test_dataset(streaming=streaming)
     rows = _shuffled_buffer(ds, target=n, multiplier=8, seed=SEED)
     out = []
     for row in rows:

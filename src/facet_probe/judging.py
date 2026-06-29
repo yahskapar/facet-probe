@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import time
 from collections import Counter, defaultdict
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -44,6 +44,7 @@ Respond strictly in this format:
 Verdict: <A|B|C|D>
 Reason: <one short sentence, <=30 words>
 """
+ProgressCallback = Callable[[str], None]
 
 
 def judge_mixed_trials(
@@ -54,6 +55,7 @@ def judge_mixed_trials(
     mock_judge: bool = False,
     max_new_tokens: int | None = None,
     limit_items: int | None = None,
+    progress_callback: ProgressCallback | None = None,
 ) -> dict[str, Any]:
     """Judge mixed-modality free-form outputs and write semantic-flip artifacts."""
 
@@ -65,6 +67,7 @@ def judge_mixed_trials(
         "summary_csv": output / "mixed_semantic_summary.csv",
     }
 
+    _progress(progress_callback, "grouping mixed_modality_order trial records")
     groups = _mixed_groups(records)
     if limit_items is not None:
         groups = dict(list(groups.items())[:limit_items])
@@ -78,10 +81,24 @@ def judge_mixed_trials(
         generation = judge_model.generation if judge_model is not None else {}
         effective_max_tokens = int(generation.get("max_output_tokens", 512))
 
+    _progress(
+        progress_callback,
+        (
+            f"judging {len(groups)} mixed item group(s) "
+            f"with {'mock' if mock_judge else judge_model.name}"
+        ),
+    )
     adapter = None if mock_judge else create_model_adapter(judge_model)  # type: ignore[arg-type]
     judgments = []
+    progress_every = _progress_interval(len(groups))
     try:
-        for key, rows in groups.items():
+        for idx, (key, rows) in enumerate(groups.items(), start=1):
+            if _should_emit_progress(idx - 1, len(groups), progress_every):
+                _progress(
+                    progress_callback,
+                    _judge_progress_message("running", idx, len(groups), key),
+                )
+            started = time.monotonic()
             judgments.append(
                 _judge_one_group(
                     key,
@@ -92,10 +109,23 @@ def judge_mixed_trials(
                     max_new_tokens=effective_max_tokens,
                 )
             )
+            if _should_emit_progress(idx, len(groups), progress_every):
+                _progress(
+                    progress_callback,
+                    _judge_progress_message(
+                        "completed",
+                        idx,
+                        len(groups),
+                        key,
+                        elapsed_seconds=time.monotonic() - started,
+                    ),
+                )
     finally:
         if adapter is not None:
             adapter.close()
+            _progress(progress_callback, "closed judge adapter")
 
+    _progress(progress_callback, "writing mixed-modality judge summary files")
     _write_jsonl(files["judgments"], judgments)
     summary_rows = _semantic_summary_rows(groups, judgments)
     write_csv(files["summary_csv"], summary_rows)
@@ -109,6 +139,44 @@ def judge_mixed_trials(
     }
     write_json(files["summary_json"], status)
     return status
+
+
+def _progress(callback: ProgressCallback | None, message: str) -> None:
+    if callback is not None:
+        callback(message)
+
+
+def _progress_interval(total: int) -> int:
+    if total <= 20:
+        return 1
+    return max(1, total // 100)
+
+
+def _should_emit_progress(done: int, total: int, interval: int) -> bool:
+    if total <= 0:
+        return False
+    return done == 0 or done == total or done % interval == 0
+
+
+def _judge_progress_message(
+    action: str,
+    done: int,
+    total: int,
+    key: tuple[str, str, str],
+    *,
+    elapsed_seconds: float | None = None,
+) -> str:
+    dataset, model, item_id = key
+    pct = 100.0 * done / total if total else 100.0
+    parts = [
+        f"{action} judgment {done}/{total} ({pct:.1f}%)",
+        f"dataset={dataset}",
+        f"model={model}",
+        f"item={item_id}",
+    ]
+    if elapsed_seconds is not None:
+        parts.append(f"elapsed={elapsed_seconds:.1f}s")
+    return " ".join(parts)
 
 
 def _mixed_groups(

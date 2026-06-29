@@ -1,6 +1,10 @@
+import sys
+from types import SimpleNamespace
+
 from facet_probe.hf_inspect import (
     build_hf_inspection,
     flatten_feature_schema,
+    inspect_hf_dataset,
     normalize_hf_dataset_id,
 )
 
@@ -61,3 +65,45 @@ def test_build_hf_inspection_uses_public_missing_split_label():
     )
 
     assert inspection.starter_dataset_spec["no_split"]["split"] == "unspecified"
+
+
+def test_inspect_hf_dataset_reports_progress(monkeypatch):
+    class FakeApi:
+        def dataset_info(self, dataset_id, revision=None):
+            assert dataset_id == "org/demo"
+            assert revision is None
+            return SimpleNamespace(
+                tags=["task_categories:question-answering"],
+                cardData={"license": "mit", "task_categories": ["question-answering"]},
+            )
+
+    fake_datasets = SimpleNamespace(
+        get_dataset_config_names=lambda *_args, **_kwargs: ["default"],
+        get_dataset_split_names=lambda *_args, **_kwargs: ["validation"],
+        load_dataset=lambda *_args, **_kwargs: iter(
+            [{"question": "Q?", "choices": ["A", "B"], "answer": "A"}]
+        ),
+        load_dataset_builder=lambda *_args, **_kwargs: SimpleNamespace(
+            info=SimpleNamespace(
+                features={"question": "string", "choices": ["string"], "answer": "string"},
+                splits={"validation": object()},
+                license="mit",
+            )
+        ),
+    )
+    fake_hub = SimpleNamespace(HfApi=FakeApi)
+    monkeypatch.setitem(sys.modules, "datasets", fake_datasets)
+    monkeypatch.setitem(sys.modules, "huggingface_hub", fake_hub)
+    messages = []
+
+    inspection = inspect_hf_dataset(
+        "org/demo",
+        sample=1,
+        progress_callback=messages.append,
+    )
+
+    assert inspection.dataset_id == "org/demo"
+    assert inspection.sample_row_count == 1
+    assert "loading dataset card metadata" in messages
+    assert "loading up to 1 sample row(s) from split=validation" in messages
+    assert "loaded 1 sample row(s)" in messages

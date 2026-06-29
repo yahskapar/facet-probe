@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import importlib.util
 import io
 import json
 import os
 import time
+import warnings
 from collections import Counter
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Protocol
@@ -63,6 +65,8 @@ DEFAULT_ANSWER_INSTRUCTION = (
     "Answer with the final answer only. For multiple-choice questions, "
     "use the answer letter."
 )
+HF_FAST_MODE_ENV = "FACET_PROBE_HF_FAST_MODE"
+ProgressCallback = Callable[[str], None]
 
 
 @dataclass(frozen=True)
@@ -158,6 +162,7 @@ def execute_profile(
     include_raw_outputs: bool = True,
     max_new_tokens: int | None = None,
     allow_partial: bool = False,
+    progress_callback: ProgressCallback | None = None,
 ) -> dict[str, Any]:
     """Run a profile and write manifest/trial/report artifacts.
 
@@ -178,12 +183,18 @@ def execute_profile(
         "report_dir": output / "report",
     }
 
+    _progress(progress_callback, "loading runtime examples")
     examples, skipped = load_runtime_examples(
         profile,
         items_jsonl=items_jsonl,
         item_facet=item_facet,
         limit_items=limit_items,
         streaming=streaming,
+        progress_callback=progress_callback,
+    )
+    _progress(
+        progress_callback,
+        f"loaded {len(examples)} example(s); shortfalls={len(skipped['shortfalls'])}",
     )
     if not examples:
         raise RuntimeError("no runnable examples were loaded for this profile")
@@ -196,6 +207,7 @@ def execute_profile(
 
     manifest_rows, by_key = _build_manifest(profile, examples, limit_trials=limit_trials)
     _write_jsonl(files["manifest"], manifest_rows)
+    _progress(progress_callback, f"wrote manifest with {len(manifest_rows)} trial row(s)")
 
     existing_records = read_jsonl(files["trials"]) if files["trials"].exists() else []
     completed = _completed_keys(existing_records)
@@ -204,15 +216,64 @@ def execute_profile(
         profile.generation_defaults.get("max_new_tokens_default", 64)
     )
     adapter_errors: list[dict[str, str]] = []
+    pending_total = sum(
+        1
+        for model in profile.models
+        for manifest_row in manifest_rows
+        if _trial_key(model.name, manifest_row) not in completed
+    )
+    if existing_records:
+        _progress(
+            progress_callback,
+            f"resuming from {len(existing_records)} existing trial record(s)",
+        )
+    _progress(
+        progress_callback,
+        f"executing {pending_total} pending trial(s) across {len(profile.models)} model(s)",
+    )
+    completed_this_run = 0
+    progress_every = _progress_interval(pending_total)
 
-    for model in profile.models:
+    for model_idx, model in enumerate(profile.models, start=1):
+        pending_for_model = sum(
+            1
+            for row in manifest_rows
+            if _trial_key(model.name, row) not in completed
+        )
+        _progress(
+            progress_callback,
+            (
+                f"model {model_idx}/{len(profile.models)} {model.name} "
+                f"({model.provider}) pending {pending_for_model} trial(s)"
+            ),
+        )
+        if model.provider == "huggingface" and pending_for_model:
+            _progress(
+                progress_callback,
+                (
+                    f"loading/generating with HuggingFace model {model.model_id}; "
+                    "the first trial may download weights and initialize the model"
+                ),
+            )
         adapter = create_model_adapter(model)
         try:
             for manifest_row in manifest_rows:
                 key = _trial_key(model.name, manifest_row)
                 if key in completed:
                     continue
+                if _should_emit_progress(completed_this_run, pending_total, progress_every):
+                    _progress(
+                        progress_callback,
+                        _trial_progress_message(
+                            "running",
+                            completed_this_run + 1,
+                            pending_total,
+                            model.name,
+                            manifest_row,
+                        ),
+                    )
                 example = by_key[(str(manifest_row["facet"]), str(manifest_row["item_id"]))]
+                trial_started = time.monotonic()
                 record = _execute_trial(
                     adapter=adapter,
                     model=model,
@@ -224,12 +285,28 @@ def execute_profile(
                 _append_jsonl(files["trials"], record)
                 report_records.append(record)
                 completed.add(key)
+                completed_this_run += 1
+                if _should_emit_progress(completed_this_run, pending_total, progress_every):
+                    elapsed = time.monotonic() - trial_started
+                    _progress(
+                        progress_callback,
+                        _trial_progress_message(
+                            "completed",
+                            completed_this_run,
+                            pending_total,
+                            model.name,
+                            manifest_row,
+                            elapsed_seconds=elapsed,
+                        ),
+                    )
         except Exception as exc:
             adapter_errors.append({"model": model.name, "error": str(exc)})
             raise
         finally:
             adapter.close()
+            _progress(progress_callback, f"closed adapter for {model.name}")
 
+    _progress(progress_callback, "writing summary, group CSV, and report artifacts")
     summary = asdict(audit_records(report_records, label=profile.name))
     group_rows = summarize_groups(report_records)
     write_json(files["summary"], summary)
@@ -257,6 +334,7 @@ def execute_profile(
         },
     }
     write_json(files["run_status"], status)
+    _progress(progress_callback, f"completed run; wrote {files['run_status']}")
     return status
 
 
@@ -267,6 +345,7 @@ def load_runtime_examples(
     item_facet: str = "option_order",
     limit_items: int | None = None,
     streaming: bool = True,
+    progress_callback: ProgressCallback | None = None,
 ) -> tuple[list[RuntimeExample], dict[str, Any]]:
     """Load normalized runtime examples from JSONL or configured HF datasets."""
 
@@ -283,9 +362,16 @@ def load_runtime_examples(
     skipped_counts: Counter[str] = Counter()
     skipped_examples: list[dict[str, Any]] = []
     shortfalls: list[dict[str, Any]] = []
-    for dataset in profile.datasets:
+    for dataset_idx, dataset in enumerate(profile.datasets, start=1):
         target = limit_items if limit_items is not None else _audited_n_int(dataset.audited_n)
         counts_by_facet: Counter[str] = Counter()
+        _progress(
+            progress_callback,
+            (
+                f"loading dataset {dataset_idx}/{len(profile.datasets)} {dataset.name} "
+                f"facets={','.join(dataset.facets)} target={target or 'all'}"
+            ),
+        )
         paper_examples = _load_paper_dataset_runtime_examples(
             dataset,
             target=target,
@@ -306,6 +392,13 @@ def load_runtime_examples(
                                 "loaded": loaded,
                             }
                         )
+            _progress(
+                progress_callback,
+                (
+                    f"loaded dataset {dataset.name}: "
+                    + ", ".join(f"{facet}={counts_by_facet[facet]}" for facet in dataset.facets)
+                ),
+            )
             continue
         for row_idx, row in enumerate(_iter_hf_dataset_rows(dataset, streaming=streaming)):
             pending_facets = [
@@ -344,11 +437,58 @@ def load_runtime_examples(
                             "loaded": loaded,
                         }
                     )
+        _progress(
+            progress_callback,
+            (
+                f"loaded dataset {dataset.name}: "
+                + ", ".join(f"{facet}={counts_by_facet[facet]}" for facet in dataset.facets)
+            ),
+        )
     return examples, {
         "counts": skipped_counts,
         "examples": skipped_examples,
         "shortfalls": shortfalls,
     }
+
+
+def _progress(callback: ProgressCallback | None, message: str) -> None:
+    if callback is not None:
+        callback(message)
+
+
+def _progress_interval(total: int) -> int:
+    if total <= 20:
+        return 1
+    return max(1, total // 100)
+
+
+def _should_emit_progress(done: int, total: int, interval: int) -> bool:
+    if total <= 0:
+        return False
+    return done == 0 or done == total or done % interval == 0
+
+
+def _trial_progress_message(
+    action: str,
+    done: int,
+    total: int,
+    model_name: str,
+    manifest_row: Mapping[str, Any],
+    *,
+    elapsed_seconds: float | None = None,
+) -> str:
+    pct = (100.0 * done / total) if total else 100.0
+    parts = [
+        f"{action} trial {done}/{total} ({pct:.1f}%)",
+        f"model={model_name}",
+        f"facet={manifest_row.get('facet')}",
+        f"dataset={manifest_row.get('dataset')}",
+        f"item={manifest_row.get('item_id')}",
+        f"ordering={manifest_row.get('ordering_idx')}",
+    ]
+    if elapsed_seconds is not None:
+        parts.append(f"elapsed={elapsed_seconds:.1f}s")
+    return " ".join(parts)
 
 
 def _load_paper_dataset_runtime_examples(
@@ -435,6 +575,7 @@ class HuggingFaceLocalAdapter:
         if self._pipe is not None:
             return self._pipe
         try:
+            import torch  # type: ignore
             from transformers import pipeline  # type: ignore
         except ImportError as exc:  # pragma: no cover - depends on optional extras
             raise RuntimeError(
@@ -443,12 +584,24 @@ class HuggingFaceLocalAdapter:
             ) from exc
 
         repo = self.model.hf_repo or self.model.model_id
-        try:
-            self._pipe = pipeline(
+        pipeline_kwargs = {
+            "model": repo,
+            "device_map": self.model.generation.get("device_map", "auto"),
+            "trust_remote_code": bool(self.model.generation.get("trust_remote_code", True)),
+        }
+
+        def load_with(attn_kwargs: Mapping[str, Any]):
+            return pipeline(
                 "text-generation",
-                model=repo,
-                device_map=self.model.generation.get("device_map", "auto"),
-                trust_remote_code=bool(self.model.generation.get("trust_remote_code", True)),
+                model_kwargs=dict(attn_kwargs),
+                **pipeline_kwargs,
+            )
+
+        try:
+            self._pipe = _load_hf_with_fast_fallback(
+                load_with,
+                _hf_attention_kwargs_variants(self.model.generation, torch),
+                description=f"HuggingFace text-generation model {repo!r}",
             )
         except Exception as exc:  # pragma: no cover - model/hardware dependent
             raise RuntimeError(
@@ -474,13 +627,10 @@ class HuggingFaceLocalAdapter:
         repo = self.model.hf_repo or self.model.model_id
         self._processor = AutoProcessor.from_pretrained(repo, trust_remote_code=True)
         dtype_name = str(self.model.generation.get("dtype", "bfloat16"))
-        kwargs: dict[str, Any] = {
+        base_kwargs: dict[str, Any] = {
             "device_map": self.model.generation.get("device_map", "auto"),
             "trust_remote_code": True,
         }
-        attn_impl = self.model.generation.get("attn_implementation")
-        if attn_impl:
-            kwargs["attn_implementation"] = attn_impl
         if self.model.generation.get("load_in_4bit"):
             try:
                 from transformers import BitsAndBytesConfig  # type: ignore
@@ -488,19 +638,28 @@ class HuggingFaceLocalAdapter:
                 raise RuntimeError(
                     "4-bit loading requires bitsandbytes support in transformers."
                 ) from exc
-            kwargs["quantization_config"] = BitsAndBytesConfig(
+            base_kwargs["quantization_config"] = BitsAndBytesConfig(
                 load_in_4bit=True,
                 bnb_4bit_compute_dtype=torch.bfloat16,
                 bnb_4bit_use_double_quant=True,
                 bnb_4bit_quant_type="nf4",
             )
         else:
-            kwargs["dtype"] = {
+            base_kwargs["dtype"] = {
                 "bfloat16": torch.bfloat16,
                 "float16": torch.float16,
                 "float32": torch.float32,
             }.get(dtype_name, torch.bfloat16)
-        self._model = AutoVLM.from_pretrained(repo, **kwargs).eval()
+
+        def load_with(attn_kwargs: Mapping[str, Any]):
+            kwargs = {**base_kwargs, **attn_kwargs}
+            return AutoVLM.from_pretrained(repo, **kwargs).eval()
+
+        self._model = _load_hf_with_fast_fallback(
+            load_with,
+            _hf_attention_kwargs_variants(self.model.generation, torch),
+            description=f"HuggingFace VLM {repo!r}",
+        )
         self._device = getattr(self._model, "device", None)
         return self._processor, self._model
 
@@ -599,6 +758,95 @@ class HuggingFaceLocalAdapter:
         self._pipe = None
         self._processor = None
         self._model = None
+
+
+def _hf_attention_kwargs_variants(
+    generation: Mapping[str, Any],
+    torch_module: Any | None = None,
+) -> tuple[dict[str, Any], ...]:
+    """Return fast-to-portable HuggingFace attention kwargs."""
+
+    explicit = generation.get("attn_implementation")
+    if explicit:
+        return ({"attn_implementation": str(explicit)},)
+
+    fast_mode = _normalize_hf_fast_mode(
+        generation.get("fast_mode", os.environ.get(HF_FAST_MODE_ENV, "auto"))
+    )
+    if fast_mode == "off":
+        return ({},)
+
+    preferred = str(generation.get("preferred_attn_implementation", "flash_attention_2"))
+    variants: list[dict[str, Any]] = []
+    if preferred and (fast_mode == "require" or _should_try_flash_attention(torch_module)):
+        variants.append({"attn_implementation": preferred})
+    if fast_mode != "require":
+        variants.append({"attn_implementation": "sdpa"})
+        variants.append({})
+    return _dedupe_kwargs_variants(variants)
+
+
+def _normalize_hf_fast_mode(value: Any) -> str:
+    text = str(value).strip().lower()
+    if text in {"", "1", "true", "yes", "on", "auto"}:
+        return "auto"
+    if text in {"0", "false", "no", "off", "disable", "disabled"}:
+        return "off"
+    if text in {"require", "required", "strict"}:
+        return "require"
+    raise ValueError(
+        f"unknown HuggingFace fast mode {value!r}; expected auto, off, or require"
+    )
+
+
+def _should_try_flash_attention(torch_module: Any | None) -> bool:
+    cuda = getattr(torch_module, "cuda", None) if torch_module is not None else None
+    cuda_available = bool(
+        cuda is not None and getattr(cuda, "is_available", lambda: False)()
+    )
+    return cuda_available and importlib.util.find_spec("flash_attn") is not None
+
+
+def _dedupe_kwargs_variants(variants: Sequence[Mapping[str, Any]]) -> tuple[dict[str, Any], ...]:
+    out: list[dict[str, Any]] = []
+    seen: set[tuple[tuple[str, str], ...]] = set()
+    for variant in variants:
+        normalized = tuple(sorted((str(key), repr(value)) for key, value in variant.items()))
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        out.append(dict(variant))
+    return tuple(out)
+
+
+def _load_hf_with_fast_fallback(
+    loader: Callable[[Mapping[str, Any]], Any],
+    variants: Sequence[Mapping[str, Any]],
+    *,
+    description: str,
+) -> Any:
+    """Try accelerated HuggingFace load kwargs first and fall back when needed."""
+
+    errors: list[tuple[Mapping[str, Any], Exception]] = []
+    for idx, variant in enumerate(variants):
+        try:
+            return loader(variant)
+        except Exception as exc:
+            errors.append((dict(variant), exc))
+            if idx >= len(variants) - 1:
+                raise
+            warnings.warn(
+                (
+                    f"Facet-Probe: fast load attempt for {description} failed with "
+                    f"{dict(variant) or 'default HuggingFace settings'}: {exc}. "
+                    "Retrying with the next fallback."
+                ),
+                RuntimeWarning,
+                stacklevel=2,
+            )
+    if errors:
+        raise errors[-1][1]
+    raise RuntimeError(f"no HuggingFace load variants configured for {description}")
 
 
 class OpenAIChatAdapter:

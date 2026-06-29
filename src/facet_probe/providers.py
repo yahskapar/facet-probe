@@ -42,7 +42,7 @@ PROVIDERS: dict[str, ProviderSpec] = {
     "huggingface": ProviderSpec(
         name="huggingface",
         required_env=(),
-        optional_env=("HF_TOKEN", "HF_HOME"),
+        optional_env=("HF_TOKEN", "HF_HOME", "FACET_PROBE_HF_FAST_MODE"),
         notes="Open-weight local inference or gated HuggingFace downloads.",
     ),
     "mock": ProviderSpec(

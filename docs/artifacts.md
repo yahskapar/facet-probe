@@ -87,20 +87,21 @@ trial is 1 when its answer matches the untied modal answer for that
 model/item across orderings. Correct-outcome theta summaries are included for
 ability/capability analyses.
 
-To prepare new trial outputs for ODI/IRT-style analysis, run:
+To fit new trial outputs for ODI/IRT-style analysis, run:
 
 ```bash
-facet-probe irt-export runs/qwen-paper/trials.jsonl \
-  --output-dir runs/qwen-paper/irt_input
+facet-probe irt-fit runs/qwen3-5-4b-paper/trials.jsonl \
+  --outcome modal \
+  --output-dir runs/qwen3-5-4b-paper/irt_fit_modal
 ```
 
-This writes modal/correct Bernoulli outcome rows and grouped summaries. It is
-an input export; run the fit itself with:
+This writes an inspectable modal/correct outcome export under
+`runs/qwen3-5-4b-paper/irt_fit_modal/irt_input/` before fitting. To materialize
+that deterministic input as a standalone artifact, run:
 
 ```bash
-facet-probe irt-fit runs/qwen-paper/irt_input/irt_input_trials.csv \
-  --outcome modal \
-  --output-dir runs/qwen-paper/irt_fit_modal
+facet-probe irt-export runs/qwen3-5-4b-paper/trials.jsonl \
+  --output-dir runs/qwen3-5-4b-paper/irt_input
 ```
 
 The fit command writes compact per-item parameters, per-facet decomposition

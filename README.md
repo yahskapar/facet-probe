@@ -63,15 +63,24 @@ Install Facet-Probe inside an environment you control:
 # Existing conda environment
 conda activate my-env
 python -m pip install -e ".[dev,hf,analysis,models,providers]"
+python -m pip install -e ".[accelerators]" || \
+  echo "Optional accelerator install failed; using portable fallback kernels."
 
 # Provided conda environment
-bash setup.sh conda --extras dev,hf,analysis,models,providers
+bash setup.sh conda
 conda activate facet-probe
 
 # uv environment
-bash setup.sh uv --extras dev,hf,analysis,models,providers
+bash setup.sh uv
 source .venv/bin/activate
 ```
+
+`setup.sh` defaults to the practical paper-run stack
+`dev,hf,analysis,models,providers` and then tries the `accelerators` extra in
+best-effort mode. If FlashAttention/Flash Linear Attention/CUDA extension
+installation is unsupported on the local machine, setup continues with the
+portable PyTorch fallback. Use `--accelerators yes` to require fast kernels, or
+`--accelerators no` to skip that optional step.
 
 For full Bayesian ODI/IRT fitting with `facet-probe irt-fit`, include the
 heavier `irt` extra in the same install step:
@@ -87,16 +96,17 @@ assume you are running from the repository root. Package-only installs still
 include the release configs and compact artifacts, but not the repo examples or
 audit script files.
 
-Run the configured paper-profile benchmark for a HuggingFace model:
+Run the configured paper-profile benchmark for one paper HuggingFace model:
 
 ```bash
 facet-probe paper-run \
-  --hf-model Qwen/Qwen3.5-VL-4B-Instruct \
-  --output-dir runs/qwen-paper
+  --model-config configs/models.yaml \
+  --models qwen3-5-4b \
+  --output-dir runs/qwen3-5-4b-paper
 ```
 
 This is a real inference run over the configured paper datasets and facets for
-the selected Qwen model. It does not run every paper model. Use
+the selected paper Qwen3.5-VL model. It does not run every paper model. Use
 `--prepare-only` to write the run profile without loading datasets or calling a
 model, and omit model selectors only when you intentionally want the full
 configured model set.
@@ -105,10 +115,11 @@ For a quick development run, restrict the dataset set and item count:
 
 ```bash
 facet-probe paper-run \
-  --hf-model Qwen/Qwen3.5-VL-4B-Instruct \
+  --model-config configs/models.yaml \
+  --models qwen3-5-4b \
   --datasets mmlu_pro \
   --limit-items 2 \
-  --output-dir runs/qwen-mmlu-smoke
+  --output-dir runs/qwen3-5-4b-mmlu-smoke
 ```
 
 Run one for a supported closed-source provider:
@@ -141,36 +152,48 @@ facet-probe paper-run --output-dir runs/full-paper --prepare-only
 Each executed run directory contains `run_profile.json`, `provider_status.json`,
 `models.jsonl`, `datasets.jsonl`, `manifest.jsonl`, `trials.jsonl`,
 `summary.json`, `group_summary.csv`, `run_status.json`, and `report/`.
-The command also prints a compact JSON summary to the terminal. These files give
-you the direct run-level audit results: flip rate, OSI, macro accuracy when gold
-labels are available, item metrics, and grouped summaries. The command does not
-silently run a Bayesian ODI/IRT posterior fit. Use `--prepare-only` when you only
-want the reproducible run profile and do not want to load datasets or call a
-model yet. Full paper-profile runs are strict by default: if a dataset/facet
-cannot reach its configured audited item count, the command fails instead of
-reporting a partial run as complete. Use `--allow-partial` only for
-development/debugging. Paper-profile execution uses dataset-specific loaders for
-the configured paper datasets; arbitrary added HuggingFace datasets use the
-generic adapter templates unless you add a custom loader. HuggingFace datasets
-stream by default where supported; use `--no-streaming` when you intentionally
-want normal cached dataset loading. File/archive-backed public assets for
-mixed-modality datasets may still require large upstream downloads.
+Long-running commands print timestamped progress/status messages to stderr by
+default, for example `facet-probe paper-run [12:34:56] loading runtime examples`.
+Final JSON/table payloads remain on stdout; use `--quiet` to suppress
+Facet-Probe status messages. These files give you the direct run-level audit
+results: flip rate, OSI, macro accuracy when gold labels are available, item
+metrics, and grouped summaries. The command does not silently run a Bayesian
+ODI/IRT posterior fit.
+Use `--prepare-only` when you only want the reproducible run profile and do not
+want to load datasets or call a model yet. Full paper-profile runs are strict by
+default: if a dataset/facet cannot reach its configured audited item count, the
+command fails instead of reporting a partial run as complete. Use
+`--allow-partial` only for development/debugging. Paper-profile execution uses
+dataset-specific loaders for the configured paper datasets; arbitrary added
+HuggingFace datasets use the generic adapter templates unless you add a custom
+loader. HuggingFace datasets stream by default where supported; use
+`--no-streaming` when you intentionally want normal cached dataset loading.
+Facet-Probe retries transient HuggingFace dataset/API failures, and the MMLU-Pro
+paper loader falls back to the public test parquet URL if HuggingFace's dataset
+tree endpoint times out. File/archive-backed public assets for mixed-modality
+datasets may still require large upstream downloads.
+Local HuggingFace adapters use `fast_mode: auto` by default: they try
+accelerated attention/kernel paths first and retry with portable PyTorch/SDPA
+settings if the fast path is unavailable. Set `FACET_PROBE_HF_FAST_MODE=off` to
+skip fast-path attempts, or `FACET_PROBE_HF_FAST_MODE=require` to fail instead
+of falling back.
 
 Run generation and the paper-style mixed-modality semantic judge in one command:
 
 ```bash
 GOOGLE_API_KEY="..." facet-probe paper-run \
-  --hf-model Qwen/Qwen3.5-VL-4B-Instruct \
-  --output-dir runs/qwen-paper \
+  --model-config configs/models.yaml \
+  --models qwen3-5-4b \
+  --output-dir runs/qwen3-5-4b-paper \
   --judge-mixed
 ```
 
 Judge mixed-modality free-form outputs from a completed run:
 
 ```bash
-GOOGLE_API_KEY="..." facet-probe judge-mixed runs/qwen-paper/trials.jsonl \
+GOOGLE_API_KEY="..." facet-probe judge-mixed runs/qwen3-5-4b-paper/trials.jsonl \
   --judge mixed-semantic-primary \
-  --output-dir runs/qwen-paper/mixed_semantic_judge
+  --output-dir runs/qwen3-5-4b-paper/mixed_semantic_judge
 ```
 
 This writes `mixed_semantic_judgments.jsonl`,
@@ -191,43 +214,52 @@ This writes a compact summary bundle, theta CSVs, diagnostics, and copies of the
 released ODI artifacts, including the Table 2 modal-outcome facet decomposition
 and appendix posterior intervals.
 
-Export a completed run to modal/correct outcome rows for ODI/IRT-style analysis:
+Fit the public Bayesian ODI/IRT model directly from a completed run:
 
 ```bash
-facet-probe irt-export runs/qwen-paper/trials.jsonl \
-  --output-dir runs/qwen-paper/irt_input
+facet-probe irt-fit runs/qwen3-5-4b-paper/trials.jsonl \
+  --outcome modal \
+  --output-dir runs/qwen3-5-4b-paper/irt_fit_modal
+```
+
+When given raw run `trials.jsonl`, `irt-fit` first writes the deterministic
+modal/correct outcome export under `runs/qwen3-5-4b-paper/irt_fit_modal/irt_input/`,
+then fits the model. Use `--dry-run` to validate and summarize those fit inputs
+without importing PyMC or sampling.
+
+You can also materialize the export as a separate inspectable/reusable step:
+
+```bash
+facet-probe irt-export runs/qwen3-5-4b-paper/trials.jsonl \
+  --output-dir runs/qwen3-5-4b-paper/irt_input
 ```
 
 This creates `irt_input_trials.csv`, `irt_input_trials.jsonl`,
-`irt_input_groups.csv`, and `irt_input_summary.json`.
-
-Fit the public Bayesian ODI/IRT model over those exported rows:
-
-```bash
-facet-probe irt-fit runs/qwen-paper/irt_input/irt_input_trials.csv \
-  --outcome modal \
-  --output-dir runs/qwen-paper/irt_fit_modal
-```
+`irt_input_groups.csv`, and `irt_input_summary.json`; the same CSV/JSONL can be
+passed to `irt-fit` if you want to avoid regenerating inputs across repeated
+fits.
 
 For a paper-scale run, install the `irt` extra and expect this to be a heavier
 posterior-sampling job:
 
 ```bash
 bash setup.sh uv --extras dev,hf,analysis,irt
-facet-probe irt-fit runs/qwen-paper/irt_input/irt_input_trials.csv \
+facet-probe irt-fit runs/qwen3-5-4b-paper/trials.jsonl \
   --outcome modal \
   --n-chains 4 \
   --n-draws 1500 \
   --n-tune 1500 \
   --target-accept 0.95 \
   --nuts-sampler numpyro \
-  --output-dir runs/qwen-paper/irt_fit_modal
+  --output-dir runs/qwen3-5-4b-paper/irt_fit_modal
 ```
 
 The fit writes compact per-item parameters, per-facet decomposition CSV/JSON,
-theta summaries, diagnostics, and `irt_fit_summary.json`. Add `--save-idata`
-only when you also want the full ArviZ NetCDF trace. The public fit
-implementation may be further optimized in future releases.
+theta summaries, diagnostics, and `irt_fit_summary.json`. PyMC sampling progress
+is shown by default during real fits; use `--no-progressbar` to suppress sampler
+progress and `--quiet` to suppress Facet-Probe status messages. Add
+`--save-idata` only when you also want the full ArviZ NetCDF trace. The public
+fit implementation may be further optimized in future releases.
 
 Use the same profile from Python:
 
@@ -578,9 +610,10 @@ For ODI/IRT, the main paper decomposition uses the modal outcome: a trial is 1
 when its normalized answer matches that model/item's untied modal answer across
 orderings. Correct-outcome theta summaries are included for ability and
 capability analyses. `facet-probe irt-summary` exposes the released paper
-outputs, and `facet-probe irt-export` creates modal/correct outcome rows from a
-new trial JSONL file. `facet-probe irt-fit` fits the public Bayesian ODI/IRT
-model over those exported rows.
+outputs, and `facet-probe irt-fit` accepts either a new run `trials.jsonl` file
+or modal/correct outcome rows previously written by `facet-probe irt-export`.
+The export command remains useful when you want to inspect, share, or reuse the
+deterministic fit input separately from the heavier Bayesian fitting step.
 
 ## Extending Facet-Probe
 

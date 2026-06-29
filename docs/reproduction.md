@@ -19,6 +19,12 @@ bash setup.sh uv
 source .venv/bin/activate
 ```
 
+The setup script installs the standard paper-run extras and tries local-model
+accelerator kernels by default. If those CUDA/Triton extensions are unsupported
+on the machine, setup falls back to portable PyTorch kernels. Use
+`--accelerators yes` to require the fast kernels, or `--accelerators no` to skip
+that optional install step.
+
 Then run:
 
 ```bash
@@ -123,45 +129,49 @@ For `option_order`, normalize model letters to source option indices before
 writing `answer_normalized`, or use
 `facet_probe.scoring.normalize_answer("option_content_idx", raw, ...)`.
 
-## Export IRT/ODI Inputs
+## Fit IRT/ODI
 
-The default run artifacts are flip/OSI/report outputs. To prepare a completed
-trial JSONL for paper-style ODI/IRT analysis, export long-form modal and correct
-Bernoulli outcome rows:
-
-```bash
-facet-probe irt-export runs/qwen-paper/trials.jsonl \
-  --output-dir runs/qwen-paper/irt_input
-```
-
-The output directory contains `irt_input_trials.csv`,
-`irt_input_trials.jsonl`, `irt_input_groups.csv`, and
-`irt_input_summary.json`. The modal outcome is 1 when a trial answer matches
-that model/item's untied modal answer across orderings; tied modal-answer item
-groups are omitted from the modal export. The correct outcome is 1 when a
-non-missing correctness label is true.
-
-Then fit the public Bayesian 2PL ODI/IRT model:
+The default run artifacts are flip/OSI/report outputs. To fit the public
+Bayesian 2PL ODI/IRT model over a completed run, pass its trial JSONL directly:
 
 ```bash
-facet-probe irt-fit runs/qwen-paper/irt_input/irt_input_trials.csv \
+facet-probe irt-fit runs/qwen3-5-4b-paper/trials.jsonl \
   --outcome modal \
-  --output-dir runs/qwen-paper/irt_fit_modal
+  --output-dir runs/qwen3-5-4b-paper/irt_fit_modal
 ```
+
+`irt-fit` writes the deterministic fit-input export under
+`runs/qwen3-5-4b-paper/irt_fit_modal/irt_input/` before fitting. The modal
+outcome is 1 when a trial answer matches that model/item's untied modal answer
+across orderings; tied modal-answer item groups are omitted from the modal
+export. The correct outcome is 1 when a non-missing correctness label is true.
+
+To inspect, share, or reuse those modal/correct Bernoulli outcome rows
+separately from fitting, run the export explicitly:
+
+```bash
+facet-probe irt-export runs/qwen3-5-4b-paper/trials.jsonl \
+  --output-dir runs/qwen3-5-4b-paper/irt_input
+```
+
+The export directory contains `irt_input_trials.csv`,
+`irt_input_trials.jsonl`, `irt_input_groups.csv`, and
+`irt_input_summary.json`; either exported trial file can be passed to
+`irt-fit`.
 
 For a paper-scale fit, install the `irt` optional extra and use the paper-style
 sampling settings:
 
 ```bash
 bash setup.sh uv --extras dev,hf,analysis,irt
-facet-probe irt-fit runs/qwen-paper/irt_input/irt_input_trials.csv \
+facet-probe irt-fit runs/qwen3-5-4b-paper/trials.jsonl \
   --outcome modal \
   --n-chains 4 \
   --n-draws 1500 \
   --n-tune 1500 \
   --target-accept 0.95 \
   --nuts-sampler numpyro \
-  --output-dir runs/qwen-paper/irt_fit_modal
+  --output-dir runs/qwen3-5-4b-paper/irt_fit_modal
 ```
 
 The fit writes compact per-item parameters, per-facet decomposition CSV/JSON,
@@ -176,11 +186,13 @@ Run the configured paper datasets and facets with one local HuggingFace model:
 
 ```bash
 facet-probe paper-run \
-  --hf-model Qwen/Qwen3.5-VL-4B-Instruct \
-  --output-dir runs/qwen-paper
+  --model-config configs/models.yaml \
+  --models qwen3-5-4b \
+  --output-dir runs/qwen3-5-4b-paper
 ```
 
-This command replaces the configured model set with the selected Qwen model. To
+This command selects the paper Qwen3.5-VL 4B profile from `configs/models.yaml`
+instead of replacing the paper profile with an arbitrary HuggingFace ID. To
 inspect the full configured model/dataset profile without launching inference,
 run:
 
@@ -193,20 +205,29 @@ dataset licenses, and storage budget are ready.
 
 The run directory contains `run_profile.json`, `provider_status.json`,
 `models.jsonl`, `datasets.jsonl`, `manifest.jsonl`, `trials.jsonl`,
-`summary.json`, `group_summary.csv`, `run_status.json`, and `report/`. The
-command also prints a JSON status summary to the terminal. It is strict by
-default: if a configured paper dataset does not load the audited item count, it
-fails rather than silently reporting a partial run as complete. Dataset loaders
-stream from HuggingFace where supported; file/archive-backed multimodal assets
-still download through the upstream distribution mechanism.
+`summary.json`, `group_summary.csv`, `run_status.json`, and `report/`.
+Long-running Facet-Probe commands print timestamped progress/status messages to
+stderr by default and keep final JSON/table payloads on stdout. Use `--quiet` to
+suppress progress output. It is strict by default: if a configured paper dataset
+does not load the audited item count, it fails rather than silently reporting a
+partial run as complete.
+Dataset loaders stream from HuggingFace where supported, retry transient
+HuggingFace API failures, and use a direct public parquet fallback for MMLU-Pro
+if the HuggingFace dataset tree endpoint times out. File/archive-backed
+multimodal assets still download through the upstream distribution mechanism.
+Local HuggingFace model profiles default to `fast_mode: auto`: accelerated
+attention/kernel paths are attempted first, then the adapter retries with
+portable SDPA/default HuggingFace settings if the fast path cannot load. Set
+`FACET_PROBE_HF_FAST_MODE=off` to skip fast attempts, or
+`FACET_PROBE_HF_FAST_MODE=require` to fail instead of falling back.
 
 For mixed-modality free-form outputs, compute paper-style semantic flip with a
 separate judge:
 
 ```bash
-GOOGLE_API_KEY="..." facet-probe judge-mixed runs/qwen-paper/trials.jsonl \
+GOOGLE_API_KEY="..." facet-probe judge-mixed runs/qwen3-5-4b-paper/trials.jsonl \
   --judge mixed-semantic-primary \
-  --output-dir runs/qwen-paper/mixed_semantic_judge
+  --output-dir runs/qwen3-5-4b-paper/mixed_semantic_judge
 ```
 
 This writes `mixed_semantic_judgments.jsonl`,
@@ -218,8 +239,9 @@ Or run the configured judge immediately after generation:
 
 ```bash
 GOOGLE_API_KEY="..." facet-probe paper-run \
-  --hf-model Qwen/Qwen3.5-VL-4B-Instruct \
-  --output-dir runs/qwen-paper \
+  --model-config configs/models.yaml \
+  --models qwen3-5-4b \
+  --output-dir runs/qwen3-5-4b-paper \
   --judge-mixed
 ```
 

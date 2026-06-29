@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -23,9 +24,9 @@ def test_paper_run_accepts_arbitrary_hf_model(tmp_path):
     result = run_cli(
         "paper-run",
         "--hf-model",
-        "Qwen/Qwen3.5-VL-4B-Instruct",
+        "Qwen/Qwen3.5-4B",
         "--output-dir",
-        str(tmp_path / "qwen-paper"),
+        str(tmp_path / "qwen35-paper"),
         "--prepare-only",
     )
 
@@ -33,8 +34,8 @@ def test_paper_run_accepts_arbitrary_hf_model(tmp_path):
     payload = json.loads(result.stdout)
     assert payload["status"] == "prepared"
     assert payload["profile"]["models"][0]["provider"] == "huggingface"
-    assert (tmp_path / "qwen-paper" / "run_profile.json").exists()
-    assert (tmp_path / "qwen-paper" / "models.jsonl").exists()
+    assert (tmp_path / "qwen35-paper" / "run_profile.json").exists()
+    assert (tmp_path / "qwen35-paper" / "models.jsonl").exists()
 
 
 def test_public_help_hides_ci_mock_options():
@@ -158,3 +159,55 @@ def test_paper_run_executes_mock_model_and_writes_results(tmp_path):
     ]
     assert [row["model"] for row in trial_rows] == ["deterministic-mock"] * 3
     assert {row["correct"] for row in trial_rows} == {True}
+
+
+def test_paper_run_emits_progress_to_stderr_and_quiet_suppresses_it(tmp_path):
+    items = tmp_path / "items.jsonl"
+    items.write_text(
+        json.dumps(
+            {
+                "item_id": "toy::1",
+                "dataset": "toy",
+                "question_ref": "Which option is blue?",
+                "components": [
+                    {"component_id": "choice_0", "kind": "choice", "content_ref": "a"},
+                    {"component_id": "choice_1", "kind": "choice", "content_ref": "b"},
+                ],
+                "choices": ["red", "blue"],
+                "gold": "1",
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    noisy = run_cli(
+        "paper-run",
+        "--mock-model",
+        "deterministic-mock",
+        "--items-jsonl",
+        str(items),
+        "--k",
+        "2",
+        "--output-dir",
+        str(tmp_path / "noisy"),
+    )
+    quiet = run_cli(
+        "paper-run",
+        "--mock-model",
+        "deterministic-mock",
+        "--items-jsonl",
+        str(items),
+        "--k",
+        "2",
+        "--output-dir",
+        str(tmp_path / "quiet"),
+        "--quiet",
+    )
+
+    assert noisy.returncode == 0, noisy.stderr
+    assert re.search(r"facet-probe paper-run \[\d\d:\d\d:\d\d\] starting run", noisy.stderr)
+    assert "completed trial 2/2" in noisy.stderr
+    assert json.loads(noisy.stdout)["status"] == "completed"
+    assert quiet.returncode == 0, quiet.stderr
+    assert quiet.stderr == ""

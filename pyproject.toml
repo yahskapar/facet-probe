@@ -47,7 +47,12 @@ models = [
   "bitsandbytes>=0.43; platform_system != 'Darwin'",
   "qwen-vl-utils>=0.0.11",
   "torch>=2.5",
-  "transformers>=4.52",
+  "transformers>=4.57",
+]
+accelerators = [
+  "causal-conv1d>=1.4,<1.6; platform_system == 'Linux' and python_version < '3.12'",
+  "flash-attn>=2.6; platform_system == 'Linux' and python_version < '3.13'",
+  "flash-linear-attention>=0.4.2,<0.5; platform_system == 'Linux' and python_version < '3.12'",
 ]
 providers = [
   "anthropic>=0.35",

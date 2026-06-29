@@ -10,6 +10,8 @@ from facet_probe.runner import (
     _build_prompt_bundle,
     _component_to_piece,
     _execute_trial,
+    _hf_attention_kwargs_variants,
+    _load_hf_with_fast_fallback,
     _mcq_example,
     execute_profile,
 )
@@ -24,6 +26,86 @@ class FakeImage:
 
     def save(self, _buf, format=None):
         return None
+
+
+class FakeCuda:
+    def __init__(self, available: bool):
+        self.available = available
+
+    def is_available(self):
+        return self.available
+
+
+class FakeTorch:
+    def __init__(self, cuda_available: bool):
+        self.cuda = FakeCuda(cuda_available)
+
+
+def test_hf_fast_mode_prefers_flash_then_sdpa_then_default(monkeypatch):
+    monkeypatch.setattr(
+        runner.importlib.util,
+        "find_spec",
+        lambda name: object() if name == "flash_attn" else None,
+    )
+
+    variants = _hf_attention_kwargs_variants(
+        {"fast_mode": "auto"},
+        FakeTorch(cuda_available=True),
+    )
+
+    assert variants == (
+        {"attn_implementation": "flash_attention_2"},
+        {"attn_implementation": "sdpa"},
+        {},
+    )
+
+
+def test_hf_fast_mode_skips_flash_without_cuda(monkeypatch):
+    monkeypatch.setattr(
+        runner.importlib.util,
+        "find_spec",
+        lambda name: object() if name == "flash_attn" else None,
+    )
+
+    variants = _hf_attention_kwargs_variants(
+        {"fast_mode": "auto"},
+        FakeTorch(cuda_available=False),
+    )
+
+    assert variants == ({"attn_implementation": "sdpa"}, {})
+
+
+def test_hf_fast_mode_can_be_disabled_or_required(monkeypatch):
+    monkeypatch.setattr(runner.importlib.util, "find_spec", lambda _name: None)
+
+    assert _hf_attention_kwargs_variants({"fast_mode": "off"}, FakeTorch(True)) == ({},)
+    assert _hf_attention_kwargs_variants({"fast_mode": "require"}, FakeTorch(False)) == (
+        {"attn_implementation": "flash_attention_2"},
+    )
+    assert _hf_attention_kwargs_variants(
+        {"attn_implementation": "eager"},
+        FakeTorch(True),
+    ) == ({"attn_implementation": "eager"},)
+
+
+def test_hf_fast_loader_warns_and_falls_back():
+    attempts = []
+
+    def loader(kwargs):
+        attempts.append(dict(kwargs))
+        if kwargs.get("attn_implementation") == "flash_attention_2":
+            raise RuntimeError("flash unavailable")
+        return {"loaded_with": dict(kwargs)}
+
+    with pytest.warns(RuntimeWarning, match="fast load attempt"):
+        loaded = _load_hf_with_fast_fallback(
+            loader,
+            ({"attn_implementation": "flash_attention_2"}, {}),
+            description="test model",
+        )
+
+    assert loaded == {"loaded_with": {}}
+    assert attempts == [{"attn_implementation": "flash_attention_2"}, {}]
 
 
 def test_prompt_bundle_preserves_image_pieces():

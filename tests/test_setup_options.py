@@ -34,6 +34,7 @@ def test_setup_script_is_executable_and_documents_both_modes():
     assert help_result.returncode == 0
     assert "bash setup.sh conda" in help_result.stdout
     assert "bash setup.sh uv" in help_result.stdout
+    assert "--accelerators MODE" in help_result.stdout
 
 
 def test_setup_conda_dry_run_does_not_require_conda():
@@ -44,7 +45,9 @@ def test_setup_conda_dry_run_does_not_require_conda():
         "conda env create --prefix /tmp/facet-probe-test-env --file environment.yml"
         in result.stdout
     )
-    assert "conda run --prefix /tmp/facet-probe-test-env python -m pip install -e" in result.stdout
+    normalized = result.stdout.replace("\\", "")
+    assert ".[dev,hf,analysis,models,providers]" in normalized
+    assert ".[accelerators]" in normalized
 
 
 def test_setup_uv_dry_run_does_not_require_uv():
@@ -55,6 +58,17 @@ def test_setup_uv_dry_run_does_not_require_uv():
     assert "uv venv --python 3.11 .venv" in result.stdout
     assert "uv pip install --python" in result.stdout
     assert ".[dev,hf,analysis]" in normalized
+    assert ".[accelerators]" in normalized
+
+
+def test_setup_dry_run_can_skip_or_require_accelerators():
+    skip = run_setup("uv", "--dry-run", "--accelerators", "no")
+    require = run_setup("uv", "--dry-run", "--accelerators", "yes")
+
+    assert skip.returncode == 0
+    assert ".[accelerators]" not in skip.stdout.replace("\\", "")
+    assert require.returncode == 0
+    assert ".[accelerators]" in require.stdout.replace("\\", "")
 
 
 def test_setup_dry_run_supports_irt_extra():

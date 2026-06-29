@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from dataclasses import asdict
 from pathlib import Path
 
@@ -36,6 +37,14 @@ from facet_probe.runner import execute_profile
 from facet_probe.validation import validate_audit_items
 
 _PUBLIC_PROVIDERS = tuple(name for name in sorted(PROVIDERS) if name != "mock")
+
+
+def _stderr_progress(command: str):
+    def emit(message: str) -> None:
+        timestamp = time.strftime("%H:%M:%S")
+        print(f"facet-probe {command} [{timestamp}] {message}", file=sys.stderr, flush=True)
+
+    return emit
 
 
 def _cmd_list_facets(_args: argparse.Namespace) -> int:
@@ -102,7 +111,12 @@ def _cmd_audit_jsonl(args: argparse.Namespace) -> int:
 
 
 def _cmd_make_report(args: argparse.Namespace) -> int:
+    progress = None if args.quiet else _stderr_progress("make-report")
+    if progress:
+        progress(f"reading trials from {args.path}")
     records = read_jsonl(args.path)
+    if progress:
+        progress(f"building report over {len(records)} trial record(s)")
     label = args.label or Path(args.path).stem
     paths = write_evaluation_report(
         args.output_dir,
@@ -111,6 +125,8 @@ def _cmd_make_report(args: argparse.Namespace) -> int:
         group_by=tuple(args.group_by),
         include_items=not args.no_item_csv,
     )
+    if progress:
+        progress(f"wrote report artifacts under {args.output_dir}")
     print(json.dumps({name: str(path) for name, path in paths.items()}, indent=2, sort_keys=True))
     return 0
 
@@ -141,13 +157,25 @@ def _cmd_irt_summary(args: argparse.Namespace) -> int:
 
 
 def _cmd_irt_export(args: argparse.Namespace) -> int:
+    progress = None if args.quiet else _stderr_progress("irt-export")
+    if progress:
+        progress(f"reading trials from {args.trials_jsonl}")
     records = read_jsonl(args.trials_jsonl)
+    if progress:
+        progress(
+            f"exporting {len(records)} trial record(s) for outcomes={','.join(args.outcomes)}"
+        )
     status = write_irt_input(records, args.output_dir, outcomes=tuple(args.outcomes))
+    if progress:
+        progress(f"wrote IRT input files under {args.output_dir}")
     print(json.dumps(status, indent=2, sort_keys=True))
     return 0
 
 
 def _cmd_irt_fit(args: argparse.Namespace) -> int:
+    progress = None if args.quiet else _stderr_progress("irt-fit")
+    if progress:
+        progress(f"preparing outcome={args.outcome} source={args.irt_input}")
     status = write_irt_fit(
         args.irt_input,
         args.output_dir,
@@ -164,11 +192,16 @@ def _cmd_irt_fit(args: argparse.Namespace) -> int:
         save_idata=args.save_idata,
         progressbar=args.progressbar,
     )
+    if progress:
+        progress(f"wrote {status['files']['fit_summary_json']}")
     print(json.dumps(status, indent=2, sort_keys=True))
     return 0
 
 
 def _cmd_inspect_hf(args: argparse.Namespace) -> int:
+    progress = None if args.quiet else _stderr_progress("inspect-hf")
+    if progress:
+        progress(f"inspecting dataset {args.dataset}")
     inspection = inspect_hf_dataset(
         args.dataset,
         config=args.config,
@@ -176,6 +209,7 @@ def _cmd_inspect_hf(args: argparse.Namespace) -> int:
         revision=args.revision,
         sample=args.sample,
         streaming=not args.no_streaming,
+        progress_callback=progress,
     )
     obj = inspection.to_dict()
     if args.output:
@@ -193,10 +227,15 @@ def _cmd_inspect_hf(args: argparse.Namespace) -> int:
         print(yaml.safe_dump(spec_obj, sort_keys=False).rstrip())
     elif not args.output:
         print(json.dumps(obj, indent=2, sort_keys=True))
+    if progress:
+        progress("inspection complete")
     return 0
 
 
 def _cmd_paper_run(args: argparse.Namespace) -> int:
+    progress = None if args.quiet else _stderr_progress("paper-run")
+    if progress:
+        progress("building evaluation profile")
     profile = paper_profile(
         config_dir=args.config_dir,
         model_config=args.model_config,
@@ -234,10 +273,17 @@ def _cmd_paper_run(args: argparse.Namespace) -> int:
     if args.output_dir:
         files = _write_paper_run_dir(Path(args.output_dir), profile, plan)
         plan["files"] = files
+        if progress:
+            progress(f"wrote run profile files under {args.output_dir}")
     elif not args.prepare_only:
         raise ValueError("--output-dir is required unless --prepare-only is set")
 
     if not args.prepare_only:
+        if progress:
+            progress(
+                f"starting run models={len(profile.models)} datasets={len(profile.datasets)} "
+                f"k={profile.k_orderings} seed={profile.seed}"
+            )
         run_status = execute_profile(
             profile,
             args.output_dir,
@@ -249,6 +295,7 @@ def _cmd_paper_run(args: argparse.Namespace) -> int:
             include_raw_outputs=not args.no_raw_outputs,
             max_new_tokens=args.max_new_tokens,
             allow_partial=args.allow_partial,
+            progress_callback=progress,
         )
         plan = {
             "status": run_status["status"],
@@ -280,12 +327,19 @@ def _cmd_paper_run(args: argparse.Namespace) -> int:
                 limit_items=args.judge_limit_items,
             )
             plan["mixed_semantic_judge"] = judge_status
+    elif progress:
+        progress("prepare-only complete")
     print(json.dumps(plan, indent=2, sort_keys=True))
     return 0
 
 
 def _cmd_judge_mixed(args: argparse.Namespace) -> int:
+    progress = None if args.quiet else _stderr_progress("judge-mixed")
+    if progress:
+        progress(f"reading trials from {args.trials_jsonl}")
     records = read_jsonl(args.trials_jsonl)
+    if progress:
+        progress(f"loaded {len(records)} trial record(s)")
     judge = None
     if not args.mock_judge:
         judge = _judge_model_from_args(args)
@@ -298,7 +352,10 @@ def _cmd_judge_mixed(args: argparse.Namespace) -> int:
         mock_judge=args.mock_judge,
         max_new_tokens=args.max_new_tokens,
         limit_items=args.limit_items,
+        progress_callback=progress,
     )
+    if progress:
+        progress(f"wrote mixed-modality judge artifacts under {output_dir}")
     print(json.dumps(status, indent=2, sort_keys=True))
     return 0
 
@@ -403,7 +460,7 @@ def _paper_run_readme(profile: EvaluationProfile) -> str:
             "- `irt_input/`: optional modal/correct outcome export when created",
             "  with `facet-probe irt-export trials.jsonl --output-dir irt_input`.",
             "- `irt_fit/`: optional Bayesian ODI/IRT fit outputs when created",
-            "  with `facet-probe irt-fit irt_input/irt_input_trials.csv --output-dir irt_fit`.",
+            "  with `facet-probe irt-fit trials.jsonl --output-dir irt_fit`.",
             "- `run_status.json`: counts, output paths, and skipped-row diagnostics.",
             "- `mixed_semantic_judge/`: semantic-equivalence judge outputs when",
             "  `paper-run --judge-mixed` was used.",
@@ -482,10 +539,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("make-report", help="Write summary/group/item evaluation artifacts.")
     p.add_argument("path")
-    p.add_argument("--output-dir", required=True)
+    p.add_argument("--output-dir", "--out-dir", dest="output_dir", required=True)
     p.add_argument("--label")
     p.add_argument("--group-by", nargs="+", default=["facet", "dataset", "model"])
     p.add_argument("--no-item-csv", action="store_true")
+    p.add_argument("--quiet", action="store_true", help="Suppress status messages on stderr.")
     p.set_defaults(func=_cmd_make_report)
 
     p = sub.add_parser("check-env", help="Check provider env vars without printing secret values.")
@@ -507,21 +565,28 @@ def build_parser() -> argparse.ArgumentParser:
         help="Export trial JSONL to modal/correct IRT-compatible outcome rows.",
     )
     p.add_argument("trials_jsonl")
-    p.add_argument("--output-dir", required=True)
+    p.add_argument("--output-dir", "--out-dir", dest="output_dir", required=True)
     p.add_argument(
         "--outcomes",
         nargs="+",
         default=["modal", "correct"],
         choices=["modal", "correct"],
     )
+    p.add_argument("--quiet", action="store_true", help="Suppress status messages on stderr.")
     p.set_defaults(func=_cmd_irt_export)
 
     p = sub.add_parser(
         "irt-fit",
-        help="Fit the public Bayesian ODI/IRT model from exported outcome rows.",
+        help="Fit the public Bayesian ODI/IRT model from run trials or exported rows.",
     )
-    p.add_argument("irt_input", help="CSV or JSONL produced by `facet-probe irt-export`.")
-    p.add_argument("--output-dir", required=True)
+    p.add_argument(
+        "irt_input",
+        help=(
+            "Run trials JSONL, or CSV/JSONL produced by `facet-probe irt-export`. "
+            "Raw trials are exported under --output-dir before fitting."
+        ),
+    )
+    p.add_argument("--output-dir", "--out-dir", dest="output_dir", required=True)
     p.add_argument("--outcome", default="modal", choices=["modal", "correct", "both"])
     p.add_argument("--n-chains", type=int, default=4)
     p.add_argument("--n-draws", type=int, default=1500)
@@ -549,7 +614,20 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Also save the full ArviZ InferenceData NetCDF trace.",
     )
-    p.add_argument("--progressbar", action="store_true", help="Show PyMC sampling progress.")
+    p.set_defaults(progressbar=True)
+    p.add_argument(
+        "--progressbar",
+        dest="progressbar",
+        action="store_true",
+        help="Show PyMC sampling progress; enabled by default.",
+    )
+    p.add_argument(
+        "--no-progressbar",
+        dest="progressbar",
+        action="store_false",
+        help="Disable PyMC sampling progress.",
+    )
+    p.add_argument("--quiet", action="store_true", help="Suppress status messages on stderr.")
     p.set_defaults(func=_cmd_irt_fit)
 
     p = sub.add_parser("inspect-hf", help="Inspect a HuggingFace dataset and suggest facets.")
@@ -562,6 +640,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--emit-spec", action="store_true")
     p.add_argument("--output")
     p.add_argument("--spec-output")
+    p.add_argument("--quiet", action="store_true", help="Suppress status messages on stderr.")
     p.set_defaults(func=_cmd_inspect_hf)
 
     p = sub.add_parser("paper-run", help="Run or prepare a paper benchmark profile.")
@@ -609,6 +688,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--no-raw-outputs", action="store_true")
     p.add_argument("--max-new-tokens", type=int)
     p.add_argument("--allow-partial", action="store_true")
+    p.add_argument("--quiet", action="store_true", help="Suppress status messages on stderr.")
     p.set_defaults(func=_cmd_paper_run)
 
     p = sub.add_parser(
@@ -635,6 +715,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--endpoint-url")
     p.add_argument("--max-new-tokens", type=int)
     p.add_argument("--limit-items", type=int)
+    p.add_argument("--quiet", action="store_true", help="Suppress status messages on stderr.")
     p.set_defaults(func=_cmd_judge_mixed)
     return parser
 

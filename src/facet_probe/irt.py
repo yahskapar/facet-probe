@@ -87,12 +87,12 @@ def released_irt_summary() -> dict[str, Any]:
                 "facet-probe irt-summary --output-dir reports/released_irt"
             ),
             "export_run_trials": (
-                "facet-probe irt-export runs/qwen-paper/trials.jsonl "
-                "--output-dir runs/qwen-paper/irt_input"
+                "facet-probe irt-export runs/qwen3-5-4b-paper/trials.jsonl "
+                "--output-dir runs/qwen3-5-4b-paper/irt_input"
             ),
             "fit_run_trials": (
-                "facet-probe irt-fit runs/qwen-paper/irt_input/irt_input_trials.csv "
-                "--outcome modal --output-dir runs/qwen-paper/irt_fit_modal"
+                "facet-probe irt-fit runs/qwen3-5-4b-paper/trials.jsonl "
+                "--outcome modal --output-dir runs/qwen3-5-4b-paper/irt_fit_modal"
             ),
         },
     }
@@ -219,7 +219,13 @@ def write_irt_fit(
     save_idata: bool = False,
     progressbar: bool = False,
 ) -> dict[str, Any]:
-    """Fit the public multi-facet Bayesian ODI/IRT model from exported rows."""
+    """Fit the public multi-facet Bayesian ODI/IRT model.
+
+    ``input_path`` may be an exported ``irt_input_trials`` CSV/JSONL file or a
+    raw ``facet-probe paper-run`` ``trials.jsonl`` file. Raw trials are exported
+    into ``output_dir / "irt_input"`` before fitting so the deterministic
+    intermediate remains inspectable.
+    """
 
     outcomes = IRT_OUTCOMES if outcome == "both" else (outcome,)
     unknown = sorted(set(outcomes) - set(IRT_OUTCOMES))
@@ -228,10 +234,20 @@ def write_irt_fit(
 
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
-    source_rows = load_irt_input_rows(input_path)
+    source_rows, source_info, export_status = _load_or_export_fit_source(
+        input_path,
+        output,
+    )
 
     fits = []
     files: dict[str, str] = {}
+    if export_status is not None:
+        files.update(
+            {
+                f"input_export_{name}": path
+                for name, path in export_status["files"].items()
+            }
+        )
     for label in outcomes:
         rows = _prepare_fit_rows(
             source_rows,
@@ -277,10 +293,14 @@ def write_irt_fit(
         "status": "prepared" if dry_run else "completed",
         "model_family": "multi-facet Bayesian 2PL ODI/IRT",
         "source": str(input_path),
+        "source_type": source_info["source_type"],
+        "input_export": export_status,
         "fit_note": (
-            "This command fits the public paper-style model over exported "
-            "modal/correct outcome rows. The implementation is intended for "
-            "reproducible public use and may be further optimized in future releases."
+            "This command fits the public paper-style model over modal/correct "
+            "outcome rows. If raw trial JSONL was supplied, the deterministic "
+            "IRT input export is written under the fit output directory. The "
+            "implementation is intended for reproducible public use and may be "
+            "further optimized in future releases."
         ),
         "settings": {
             "outcome": outcome,
@@ -317,6 +337,47 @@ def load_irt_input_rows(path: str | Path) -> list[dict[str, Any]]:
         with open(path, newline="", encoding="utf-8") as f:
             return [dict(row) for row in csv.DictReader(f)]
     raise ValueError(f"unsupported IRT input extension for {path}; expected .csv or .jsonl")
+
+
+def _load_or_export_fit_source(
+    input_path: str | Path,
+    output_dir: Path,
+) -> tuple[list[dict[str, Any]], dict[str, str], dict[str, Any] | None]:
+    path = Path(input_path)
+    rows = load_irt_input_rows(path)
+    if _looks_like_irt_input_rows(rows):
+        return rows, {"source_type": "irt_input"}, None
+    if _has_partial_irt_input_schema(rows):
+        raise ValueError(
+            f"{path} mixes IRT input and trial schemas; expected either raw "
+            "trial JSONL or an irt-export CSV/JSONL."
+        )
+    if path.suffix.lower() != ".jsonl":
+        raise ValueError(
+            f"{path} does not look like exported IRT rows. Raw run trials must "
+            "be provided as JSONL, or run `facet-probe irt-export` first."
+        )
+
+    export_status = write_irt_input(rows, output_dir / "irt_input", outcomes=IRT_OUTCOMES)
+    exported_rows = load_irt_input_rows(export_status["files"]["trials_csv"])
+    return exported_rows, {"source_type": "trial_jsonl"}, export_status
+
+
+def _looks_like_irt_input_rows(rows: Sequence[Mapping[str, Any]]) -> bool:
+    return bool(rows) and all(
+        "outcome" in row and "outcome_value" in row
+        for row in rows
+    )
+
+
+def _has_partial_irt_input_schema(rows: Sequence[Mapping[str, Any]]) -> bool:
+    markers = [
+        ("outcome" in row, "outcome_value" in row)
+        for row in rows
+    ]
+    return any(outcome or value for outcome, value in markers) and not all(
+        outcome and value for outcome, value in markers
+    )
 
 
 def _build_irt_export(

@@ -4,6 +4,8 @@ import json
 import zipfile
 from pathlib import Path
 
+import pytest
+
 import facet_probe.paper_loaders as paper_loaders
 from facet_probe.profiles import DatasetProfile, EvaluationProfile, ModelProfile, paper_profile
 from facet_probe.runner import RuntimeExample, _build_prompt_bundle, execute_profile
@@ -65,6 +67,57 @@ def test_paper_loader_respects_streaming_flag(monkeypatch):
 
     assert seen["streaming"] is False
     assert len(examples) == 1
+
+
+def test_load_dataset_retries_transient_hf_errors(monkeypatch):
+    calls = []
+
+    def flaky_load_dataset(*args, **kwargs):
+        calls.append((args, kwargs))
+        if len(calls) == 1:
+            raise RuntimeError("504 Gateway Time-out")
+        return [{"ok": True}]
+
+    monkeypatch.setattr(paper_loaders, "_load_dataset_once", flaky_load_dataset)
+    monkeypatch.setenv("FACET_PROBE_HF_RETRIES", "2")
+    monkeypatch.setenv("FACET_PROBE_HF_RETRY_SLEEP", "0")
+
+    with pytest.warns(RuntimeWarning, match="transient HuggingFace"):
+        rows = paper_loaders._load_dataset("fake/repo", split="test", streaming=True)
+
+    assert rows == [{"ok": True}]
+    assert len(calls) == 2
+
+
+def test_mmlu_pro_loader_falls_back_to_direct_parquet_on_hf_tree_timeout(monkeypatch):
+    calls = []
+
+    def fake_load_dataset(*args, **kwargs):
+        calls.append((args, kwargs))
+        if args[0] == "TIGER-Lab/MMLU-Pro":
+            raise RuntimeError("504 Gateway Time-out")
+        assert args[0] == "parquet"
+        assert kwargs["data_files"]["test"] == paper_loaders.MMLU_PRO_TEST_PARQUET
+        return [
+            {
+                "question_id": "q1",
+                "question": "Pick blue.",
+                "options": ["red", "blue", "green", "yellow"],
+                "answer_index": 1,
+            }
+        ]
+
+    monkeypatch.setattr(paper_loaders, "_load_dataset", fake_load_dataset)
+
+    with pytest.warns(RuntimeWarning, match="falling back"):
+        examples = paper_loaders.load_option_order_mmlu_pro(
+            _dataset("mmlu_pro", "option_order"),
+            target=1,
+        )
+
+    assert len(examples) == 1
+    assert examples[0].gold_normalized == "1"
+    assert [call[0][0] for call in calls] == ["TIGER-Lab/MMLU-Pro", "parquet"]
 
 
 def test_mmlu_pro_loader_normalizes_mcq_rows(monkeypatch):
