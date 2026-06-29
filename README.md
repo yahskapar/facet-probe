@@ -1,7 +1,7 @@
 # Facet-Probe
 
 > [!CAUTION]
-> **NOTE:** This is a very initial (`v0.0.1`) release of the codebase
+> This is a very initial (`v0.0.1`) release of the codebase
 > corresponding to the release of the pre-print on arXiv. In order to bring
 > together various pieces of code and evaluation artifacts, coding agents
 > (e.g., Claude Code, OpenAI Codex) were significantly used. Despite high-level
