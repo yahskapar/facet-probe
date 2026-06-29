@@ -2,7 +2,8 @@
 
 > [!CAUTION]
 > This is a very initial (`v0.0.1`) release of the codebase
-> corresponding to the release of the pre-print on arXiv. In order to bring
+> corresponding to the release of the
+> [pre-print on arXiv](https://arxiv.org/abs/2606.26079). In order to bring
 > together various pieces of code and evaluation artifacts, coding agents
 > (e.g., Claude Code, OpenAI Codex) were significantly used. Despite high-level
 > validation of various scripts and double-checking that they reproduce results
@@ -25,14 +26,19 @@ Official code and artifact release for<br>
 </p>
 
 <p align="center">
-<a href="#install">Install</a> |
+<a href="https://arxiv.org/abs/2606.26079">Pre-print</a> |
 <a href="#quickstart">Quickstart</a> |
+<a href="#release-checklist">Checklist</a> |
+<a href="#release-contents">Release Contents</a> |
+<a href="#install">Install</a> |
 <a href="#common-usage">Common Usage</a> |
 <a href="#python-library-usage">Python API</a> |
 <a href="#paper-artifacts">Artifacts</a> |
 <a href="#reproducing-the-release">Reproduction</a> |
-<a href="#release-checklist">Checklist</a> |
-<a href="#extending-facet-probe">Extending</a>
+<a href="#method-notes">Method Notes</a> |
+<a href="#extending-facet-probe">Extending</a> |
+<a href="#citation">Citation</a> |
+<a href="#license">License</a>
 </p>
 
 Facet-Probe audits whether multimodal large language models give the same answer
