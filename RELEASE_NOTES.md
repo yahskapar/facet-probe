@@ -21,6 +21,9 @@
 - Adds `facet-probe irt-summary` for released ODI/IRT artifact inspection,
   `facet-probe irt-export` for modal/correct outcome-row exports from new runs,
   and `facet-probe irt-fit` for the public Bayesian ODI/IRT fit.
+- Adds default PNG/PDF figures for evaluation reports and ODI/IRT summaries,
+  including grouped flip/OSI/accuracy panels, item-instability plots, theta
+  intervals, and facet-decomposition figures.
 - Packages release configs and compact artifacts in wheels so installed
   CLI/API calls can load the public release profile outside a repo checkout.
 - Adds `scripts/audit_release.py` for manifest coverage, byte-for-byte artifact

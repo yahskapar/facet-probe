@@ -60,6 +60,7 @@ providers = [
   "openai>=1.40",
 ]
 analysis = [
+  "matplotlib>=3.8",
   "pandas>=2.0",
   "pyarrow>=15",
 ]

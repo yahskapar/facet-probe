@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from facet_probe.artifacts import artifact_path, load_csv, load_json
+from facet_probe.figures import write_irt_outcome_figures, write_released_irt_figures
 from facet_probe.metrics import write_csv, write_json
 from facet_probe.schema import TrialRecord
 
@@ -148,6 +149,8 @@ def write_released_irt_summary(output_dir: str | Path) -> dict[str, Any]:
     write_json(manifest_path, {"schema_version": 1, "copied_artifacts": copied})
     files["manifest_json"] = str(manifest_path)
     files["copied_artifact_dir"] = str(artifact_dir)
+    figure_paths = write_released_irt_figures(summary, output / "figures")
+    files.update({f"figures_{name}": str(path) for name, path in figure_paths.items()})
 
     return {
         "status": "completed",
@@ -666,6 +669,7 @@ def _fit_one_outcome(
     theta_rows = _extract_theta(idata, fit_input)
     diagnostics = _diagnostics(idata, stack)
     per_facet = _per_facet_summary(idata, fit_input, item_rows)
+    facet_rows = _facet_summary_rows(per_facet)
 
     item_path = output_dir / f"irt_v4_{label}_per_item_params.csv"
     facet_path = output_dir / f"irt_v4_{label}_per_facet_summary.json"
@@ -675,7 +679,7 @@ def _fit_one_outcome(
     diagnostics_path = output_dir / f"irt_v4_{label}_diagnostics.json"
     write_csv(item_path, item_rows)
     write_json(facet_path, per_facet)
-    write_csv(facet_csv_path, _facet_summary_rows(per_facet))
+    write_csv(facet_csv_path, facet_rows)
     write_json(theta_path, {"models": theta_rows})
     write_csv(theta_csv_path, theta_rows)
     write_json(diagnostics_path, diagnostics)
@@ -687,6 +691,13 @@ def _fit_one_outcome(
         "theta_csv": str(theta_csv_path),
         "diagnostics_json": str(diagnostics_path),
     }
+    figure_paths = write_irt_outcome_figures(
+        output_dir / "figures",
+        outcome=label,
+        theta_rows=theta_rows,
+        facet_rows=facet_rows,
+    )
+    files.update({f"figures_{name}": str(path) for name, path in figure_paths.items()})
     if save_idata:
         idata_path = output_dir / f"irt_v4_{label}_idata.nc"
         idata.to_netcdf(idata_path)

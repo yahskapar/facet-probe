@@ -44,7 +44,8 @@ facet-probe irt-summary --output-dir reports/released_irt
 This writes `released_irt_summary.json`, theta CSVs, diagnostics, and copies of
 the compact `artifacts/odi/` files used for the Table 2 modal-outcome ODI
 decomposition, capability theta summaries, and appendix posterior interval
-checks.
+checks. It also writes PNG/PDF figures under `reports/released_irt/figures/`
+for model-theta intervals and modal-outcome facet decomposition.
 
 Run the public release audit:
 
@@ -175,10 +176,10 @@ facet-probe irt-fit runs/qwen3-5-4b-paper/trials.jsonl \
 ```
 
 The fit writes compact per-item parameters, per-facet decomposition CSV/JSON,
-theta summaries, diagnostics, and `irt_fit_summary.json`. Use `--dry-run` to
-validate and summarize inputs before sampling, and add `--save-idata` only when
-you need the full ArviZ NetCDF trace. The public fitting workflow may be
-optimized further after `v0.0.1`.
+theta summaries, diagnostics, `irt_fit_summary.json`, and PNG/PDF figures under
+`figures/`. Use `--dry-run` to validate and summarize inputs before sampling,
+and add `--save-idata` only when you need the full ArviZ NetCDF trace. The
+public fitting workflow may be optimized further after `v0.0.1`.
 
 ## Paper-Profile Reruns
 
@@ -206,6 +207,10 @@ dataset licenses, and storage budget are ready.
 The run directory contains `run_profile.json`, `provider_status.json`,
 `models.jsonl`, `datasets.jsonl`, `manifest.jsonl`, `trials.jsonl`,
 `summary.json`, `group_summary.csv`, `run_status.json`, and `report/`.
+The `report/` directory includes `summary.json`, grouped and item-level CSVs,
+and default PNG/PDF figures under `report/figures/` for run-level metrics,
+grouped flip/OSI/accuracy, item-instability distributions, and the highest-OSI
+items.
 Long-running Facet-Probe commands print timestamped progress/status messages to
 stderr by default and keep final JSON/table payloads on stdout. Use `--quiet` to
 suppress progress output. It is strict by default: if a configured paper dataset

@@ -85,7 +85,9 @@ to write a public summary bundle for these files from either a checkout or an
 installed wheel. The main paper decomposition uses the modal outcome, where a
 trial is 1 when its answer matches the untied modal answer for that
 model/item across orderings. Correct-outcome theta summaries are included for
-ability/capability analyses.
+ability/capability analyses. The bundle also writes paper-oriented PNG/PDF
+figures under `figures/` for theta intervals and modal-outcome facet
+decomposition.
 
 To fit new trial outputs for ODI/IRT-style analysis, run:
 
@@ -105,7 +107,8 @@ facet-probe irt-export runs/qwen3-5-4b-paper/trials.jsonl \
 ```
 
 The fit command writes compact per-item parameters, per-facet decomposition
-CSV/JSON, theta summaries, diagnostics, and `irt_fit_summary.json`. The
+CSV/JSON, theta summaries, diagnostics, `irt_fit_summary.json`, and PNG/PDF
+figures. The
 multi-gigabyte paper `idata.nc` and `raw_multitrace.pkl` posterior traces are
 intentionally excluded; new local traces are saved only when
 `irt-fit --save-idata` is used. The public fitting workflow may be further

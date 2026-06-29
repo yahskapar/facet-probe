@@ -152,6 +152,10 @@ facet-probe paper-run --output-dir runs/full-paper --prepare-only
 Each executed run directory contains `run_profile.json`, `provider_status.json`,
 `models.jsonl`, `datasets.jsonl`, `manifest.jsonl`, `trials.jsonl`,
 `summary.json`, `group_summary.csv`, `run_status.json`, and `report/`.
+The `report/` directory includes CSV/JSON summaries plus publication-oriented
+PNG/PDF figures under `report/figures/`: run-level metric bars, grouped
+flip/OSI/accuracy panels, item-instability distributions, and the most unstable
+items. Use `facet-probe make-report --no-figures` when you only want CSV/JSON.
 Long-running commands print timestamped progress/status messages to stderr by
 default, for example `facet-probe paper-run [12:34:56] loading runtime examples`.
 Final JSON/table payloads remain on stdout; use `--quiet` to suppress
@@ -212,7 +216,9 @@ facet-probe irt-summary --output-dir reports/released_irt
 
 This writes a compact summary bundle, theta CSVs, diagnostics, and copies of the
 released ODI artifacts, including the Table 2 modal-outcome facet decomposition
-and appendix posterior intervals.
+and appendix posterior intervals. It also writes paper-oriented PNG/PDF figures
+under `reports/released_irt/figures/`, including model-theta interval plots and
+the modal-outcome facet-decomposition plot.
 
 Fit the public Bayesian ODI/IRT model directly from a completed run:
 
@@ -224,8 +230,9 @@ facet-probe irt-fit runs/qwen3-5-4b-paper/trials.jsonl \
 
 When given raw run `trials.jsonl`, `irt-fit` first writes the deterministic
 modal/correct outcome export under `runs/qwen3-5-4b-paper/irt_fit_modal/irt_input/`,
-then fits the model. Use `--dry-run` to validate and summarize those fit inputs
-without importing PyMC or sampling.
+then fits the model. Completed fits write theta interval and facet-decomposition
+figures under `runs/qwen3-5-4b-paper/irt_fit_modal/figures/`. Use `--dry-run` to
+validate and summarize fit inputs without importing PyMC or sampling.
 
 You can also materialize the export as a separate inspectable/reusable step:
 
@@ -494,6 +501,11 @@ facet-probe audit-jsonl path/to/trials.jsonl --group-csv group_summary.csv
 facet-probe make-report path/to/trials.jsonl --output-dir reports/run1
 facet-probe make-report examples/toy_trials.jsonl --output-dir /tmp/toy_report
 ```
+
+`make-report` writes `summary.json`, `group_summary.csv`, `item_metrics.csv`,
+`report_manifest.json`, and default PNG/PDF figures under `figures/`. Figure
+generation uses the `analysis` extra; lean installs without Matplotlib write a
+`figures_manifest.json` that marks figure generation as skipped.
 
 Trial JSONL rows should contain fields such as `facet`, `dataset`, `model`,
 `item_id`, `ordering_idx`, `answer_normalized`, and `correct`.

@@ -1,6 +1,11 @@
 """Facet-Probe public API."""
 
 from facet_probe.facets import FacetSpec, get_facet, sample_permutations
+from facet_probe.figures import (
+    write_irt_outcome_figures,
+    write_released_irt_figures,
+    write_report_figures,
+)
 from facet_probe.hf_inspect import HFInspection, build_hf_inspection
 from facet_probe.irt import (
     load_irt_input_rows,
@@ -98,9 +103,12 @@ __all__ = [
     "trial_manifest_rows",
     "validate_audit_items",
     "write_evaluation_report",
+    "write_irt_outcome_figures",
     "write_irt_fit",
     "write_irt_input",
+    "write_released_irt_figures",
     "write_released_irt_summary",
+    "write_report_figures",
 ]
 
 __version__ = "0.0.1"

@@ -6,6 +6,7 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
+from facet_probe.figures import write_report_figures
 from facet_probe.metrics import (
     audit_records,
     item_metrics_as_dicts,
@@ -43,6 +44,7 @@ def write_evaluation_report(
     label: str,
     group_by: tuple[str, ...] = ("facet", "dataset", "model"),
     include_items: bool = True,
+    include_figures: bool = True,
 ) -> dict[str, Path]:
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
@@ -62,12 +64,19 @@ def write_evaluation_report(
     if include_items:
         paths["item_csv"] = output / "item_metrics.csv"
         write_csv(paths["item_csv"], report["items"])
+    if include_figures:
+        figure_paths = write_report_figures(report, output / "figures")
+        paths.update({f"figures_{name}": path for name, path in figure_paths.items()})
 
     manifest = {
         "schema_version": report["schema_version"],
         "label": label,
         "group_by": list(group_by),
-        "files": {name: path.name for name, path in paths.items() if name != "manifest_json"},
+        "files": {
+            name: str(path.relative_to(output))
+            for name, path in paths.items()
+            if name != "manifest_json"
+        },
     }
     write_json(paths["manifest_json"], manifest)
     return paths

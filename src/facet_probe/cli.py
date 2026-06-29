@@ -124,6 +124,7 @@ def _cmd_make_report(args: argparse.Namespace) -> int:
         label=label,
         group_by=tuple(args.group_by),
         include_items=not args.no_item_csv,
+        include_figures=not args.no_figures,
     )
     if progress:
         progress(f"wrote report artifacts under {args.output_dir}")
@@ -537,12 +538,16 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--group-csv")
     p.set_defaults(func=_cmd_audit_jsonl)
 
-    p = sub.add_parser("make-report", help="Write summary/group/item evaluation artifacts.")
+    p = sub.add_parser(
+        "make-report",
+        help="Write summary/group/item evaluation artifacts and default figures.",
+    )
     p.add_argument("path")
     p.add_argument("--output-dir", "--out-dir", dest="output_dir", required=True)
     p.add_argument("--label")
     p.add_argument("--group-by", nargs="+", default=["facet", "dataset", "model"])
     p.add_argument("--no-item-csv", action="store_true")
+    p.add_argument("--no-figures", action="store_true", help="Skip default PNG/PDF figures.")
     p.add_argument("--quiet", action="store_true", help="Suppress status messages on stderr.")
     p.set_defaults(func=_cmd_make_report)
 

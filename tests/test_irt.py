@@ -3,6 +3,7 @@ import json
 import os
 import subprocess
 import sys
+from importlib.util import find_spec
 from pathlib import Path
 
 from facet_probe.irt import (
@@ -15,6 +16,7 @@ from facet_probe.irt import (
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+HAS_MATPLOTLIB = find_spec("matplotlib") is not None
 
 
 def run_cli(*args: str) -> subprocess.CompletedProcess[str]:
@@ -49,6 +51,15 @@ def test_write_released_irt_summary_bundle(tmp_path):
     assert Path(files["theta_modal_csv"]).exists()
     assert Path(files["theta_correct_csv"]).exists()
     assert Path(files["copied_artifact_dir"], "irt_v4_modal_per_item_params.parquet").exists()
+    assert Path(files["figures_released_modal_figures_manifest_json"]).exists()
+    assert Path(files["figures_released_correct_figures_manifest_json"]).exists()
+    if HAS_MATPLOTLIB:
+        assert Path(files["figures_released_modal_figure_theta_png"]).exists()
+        assert Path(files["figures_released_modal_figure_facet_decomposition_pdf"]).exists()
+        assert Path(files["figures_released_correct_figure_theta_png"]).exists()
+        assert Path(files["figures_released_modal_figure_theta_png"]).read_bytes().startswith(
+            b"\x89PNG"
+        )
 
 
 def test_trial_records_to_irt_rows_modal_and_correct():
