@@ -7,7 +7,6 @@ import json
 
 import facet_probe as fp
 
-
 ITEMS = [
     fp.mcq_audit_item(
         {
