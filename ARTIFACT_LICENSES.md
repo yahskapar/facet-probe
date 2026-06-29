@@ -7,6 +7,7 @@ The repository license is Apache-2.0 for code, configs, docs, and repo-native de
 The shipped artifacts are aggregate or derived release files:
 
 - per-facet and per-model flip-rate tables,
+- compact capability, calibration, mechanism, demoted-facet, and LLM-judge validation summaries,
 - screened image-set item IDs and classifications,
 - decoder-noise decomposition summaries,
 - mitigation policy summaries,
@@ -16,7 +17,7 @@ These artifacts are intended for research reproduction of the paper's reported n
 
 ## Not Included
 
-This repo intentionally does not redistribute upstream dataset text, images, tables, or prompts. It also excludes credentials, provider caches, raw 78GB internal experiment trees, and multi-gigabyte posterior traces.
+This repo intentionally does not redistribute upstream dataset text, images, or tables. It also excludes credentials, provider caches, raw provider-output run trees, full prompt and judge-prompt text, per-item judge labels, and multi-gigabyte posterior traces.
 
 The sanitized image-set screen includes item IDs, classifications, regex flags, and aggregate behavioral diagnostics, but omits question text, choices, and free-text rationales from upstream datasets.
 

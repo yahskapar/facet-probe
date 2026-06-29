@@ -2,11 +2,9 @@
 
 Date: 2026-06-23
 
-Source artifact:
-`EMNLP_2026/MMIOS/results/decoder_decomp_screened.{json,md,_by_facet.csv}`
-
-Run wrapper:
-`EMNLP_2026/arxiv_finalization/scripts/run_screened_decoder_decomp.sh`
+Public artifacts:
+`artifacts/robustness/decoder_decomp_screened.json` and
+`artifacts/robustness/decoder_decomp_screened_by_facet.csv`.
 
 ## Input Check
 

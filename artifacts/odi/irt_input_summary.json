@@ -109,7 +109,7 @@
     }
   ],
   "screen": {
-    "screen_json": "EMNLP_2026/MMIOS/data/screens/imageset_position_reference_screen.json",
+    "public_screen_csv": "artifacts/screens/imageset_position_reference_screen.csv",
     "policy": "drop classification == exclude for image_set_order; keep keep + borderline",
     "n_trials_before": 465899,
     "n_trials_after": 459162,

@@ -1,0 +1,12 @@
+facet,result,model_or_dataset,value_min,value_max,unit,n,notes
+dialog_turn_order,multichallenge_same_order_accuracy,MultiChallenge,0.007,0.007,accuracy,,degenerate floor makes flip-rate decomposition uninformative
+dialog_turn_order,synthetic_dialog_exact_match_flip,musique_synth; hotpotqa_synth on Gemini Pro/Flash,0.085,0.185,flip_rate,,macro-accuracy range 0.69-0.95
+dialog_turn_order,dialog_rescore_content_flip,MT-Eval; MultiChallenge,0.50,0.85,content_flip_rate,,judge/model dependent semantic instability
+few_shot_order,gsm8k_flip,GSM8K on Gemini Pro/Flash,0.0,0.005,flip_rate,n=200,near-zero math demonstration-order flip
+few_shot_order,humaneval_filtered_flip,HumanEval on Gemini Pro/Flash,0.32,0.54,flip_rate,n=156,filtered run
+few_shot_order,humaneval_diagnostic_flip,HumanEval on Gemini Pro/Flash,0.20,0.58,flip_rate,n=50,earlier diagnostic run
+tool_description_order,disambiguating_queries_content_flip,Pro/Flash disambiguating queries,0,0,flipped_model_dataset_items,200 model-dataset items / 1200 trials,reliable query-conditional null
+tool_description_order,disambiguating_queries_accuracy,Pro/Flash disambiguating queries,0.96,1.00,gold_match_accuracy,,accuracy range
+tool_description_order,glaive_k10_stress_flip_pro,Gemini Pro stress set,0.517,0.517,flip_rate,K=6,not restricted to disambiguating subset
+tool_description_order,glaive_k10_stress_flip_flash,Gemini Flash stress set,0.550,0.550,flip_rate,K=6,not restricted to disambiguating subset
+tool_description_order,glaive_k10_stress_accuracy,Pro/Flash stress set,0.77,0.78,gold_match_accuracy,,accuracy range

@@ -1,0 +1,10 @@
+result_family,metric,model_or_group,value,unit,public_inputs,arxiv_reference,notes
+main_figure_1,spearman_theta_correct_vs_mean5,full_18_model_panel,-0.946,rho,artifacts/odi/irt_v4_correct_theta.json; artifacts/paper/screened_panel_values.json,sections/4-findings.tex Q5,rounds to approx -0.95
+main_figure_1,best_model_mean5_flip,gemini-3.1-pro-preview,0.134,flip_rate,artifacts/paper/screened_panel_values.json,main.tex fpBestFlip,rounds to 13.4 percent
+main_figure_1,best_of_frontier_mean5_flip,gemini-3.1-pro-preview; claude-opus-4-7; gpt-5-5,0.166,flip_rate,artifacts/paper/screened_panel_values.json,main.tex fpFrontierSubsetMean,rounds to 17 percent
+main_figure_1,best_of_open_weight_mean5_flip,qwen3-5-27b; internvl3-5-14b; kimi-vl-a3b-instruct; medgemma-27b-it,0.361,flip_rate,artifacts/paper/screened_panel_values.json,main.tex fpOpenWeightSubsetMean,rounds to 36 percent
+supp_within_family_scaling,qwen3_5_vl_0_8b_screened4,Qwen3.5-VL 0.8B,0.568,flip_rate,artifacts/paper/screened_panel_values.json,sections/4-findings.tex Q5,4-facet mean excluding mixed-modality
+supp_within_family_scaling,qwen3_5_vl_27b_screened4,Qwen3.5-VL 27B,0.291,flip_rate,artifacts/paper/screened_panel_values.json,sections/4-findings.tex Q5,4-facet mean excluding mixed-modality
+supp_within_family_scaling,internvl3_5_4b_screened4,InternVL3.5 4B,0.368,flip_rate,artifacts/paper/screened_panel_values.json,sections/4-findings.tex Q5,4-facet mean excluding mixed-modality
+supp_within_family_scaling,internvl3_5_14b_screened4,InternVL3.5 14B,0.317,flip_rate,artifacts/paper/screened_panel_values.json,sections/4-findings.tex Q5,4-facet mean excluding mixed-modality
+supp_within_family_scaling,internvl3_5_38b_screened4,InternVL3.5 38B,0.333,flip_rate,artifacts/paper/screened_panel_values.json,sections/4-findings.tex Q5,4-facet mean excluding mixed-modality

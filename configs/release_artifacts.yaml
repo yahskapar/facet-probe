@@ -6,13 +6,19 @@ included:
   overview:
     - artifacts/README.md
     - artifacts/reproducibility_matrix.md
+    - artifacts/arxiv_audit.md
   paper:
     - artifacts/paper/dataset_summary.csv
     - artifacts/paper/per_facet_per_model.csv
     - artifacts/paper/panel_means.csv
+    - artifacts/paper/capability_summary.csv
+    - artifacts/paper/additional_facet_results.csv
     - artifacts/paper/mixed_modality_cells.csv
     - artifacts/paper/image_set_screened_rates.csv
     - artifacts/paper/screened_panel_values.json
+  diagnostics:
+    - artifacts/diagnostics/calibration_mechanism_summary.csv
+    - artifacts/diagnostics/llm_judge_validation.csv
   robustness:
     - artifacts/robustness/decoder_decomp_screened_by_facet.csv
     - artifacts/robustness/decoder_decomp_screened.json
@@ -47,46 +53,11 @@ included:
     - artifacts/provenance/mitigation_screened_values.md
     - artifacts/provenance/cta_think_budget_summary.md
 
-materialized_by_script:
-  - artifacts/paper/dataset_summary.csv
-  - artifacts/paper/per_facet_per_model.csv
-  - artifacts/paper/panel_means.csv
-  - artifacts/paper/mixed_modality_cells.csv
-  - artifacts/paper/image_set_screened_rates.csv
-  - artifacts/paper/screened_panel_values.json
-  - artifacts/robustness/decoder_decomp_screened_by_facet.csv
-  - artifacts/robustness/decoder_decomp_screened.json
-  - artifacts/odi/facet_decomposition.csv
-  - artifacts/odi/posterior_intervals.csv
-  - artifacts/odi/irt_v4_modal_per_facet_summary.json
-  - artifacts/odi/irt_v4_correct_per_facet_summary.json
-  - artifacts/odi/irt_v4_correct_theta.json
-  - artifacts/odi/irt_v4_modal_theta.json
-  - artifacts/odi/irt_v4_modal_diagnostics.json
-  - artifacts/odi/irt_v4_correct_diagnostics.json
-  - artifacts/odi/irt_input_summary.json
-  - artifacts/odi/screen_filter_metadata.json
-  - artifacts/odi/irt_v4_modal_per_item_params.parquet
-  - artifacts/odi/irt_v4_correct_per_item_params.parquet
-  - artifacts/mitigation/policy_means.csv
-  - artifacts/mitigation/mitigation_screened_values.json
-  - artifacts/mitigation/mitigation_menu_summary.json
-  - artifacts/mitigation/pareto_frontier_points.json
-  - artifacts/mitigation/cta_flip_summary.csv
-  - artifacts/mitigation/think_budget_sweep.csv
-  - artifacts/screens/imageset_position_reference_screen.csv
-  - artifacts/screens/imageset_position_reference_screen_summary.json
-  - artifacts/provenance/screened_panel_values.md
-  - artifacts/provenance/screened_odi_fit_audit.md
-  - artifacts/provenance/odi_posterior_interval_audit.md
-  - artifacts/provenance/decoder_decomp_screened_audit.md
-  - artifacts/provenance/mitigation_screened_values.md
-  - artifacts/provenance/cta_think_budget_summary.md
-
 correspondence:
   - paper_element: Release-wide reproducibility map
     artifacts:
       - artifacts/reproducibility_matrix.md
+      - artifacts/arxiv_audit.md
   - paper_element: Main Figure 2 and Table 1 per-facet flip rates
     artifacts:
       - artifacts/paper/dataset_summary.csv
@@ -94,6 +65,13 @@ correspondence:
       - artifacts/paper/panel_means.csv
       - artifacts/paper/screened_panel_values.json
       - artifacts/provenance/screened_panel_values.md
+  - paper_element: Main Figure 1 capability and appendix within-family scaling
+    artifacts:
+      - artifacts/paper/capability_summary.csv
+      - artifacts/paper/per_facet_per_model.csv
+      - artifacts/paper/screened_panel_values.json
+      - artifacts/odi/irt_v4_correct_theta.json
+      - artifacts/provenance/screened_odi_fit_audit.md
   - paper_element: Main Table 2 ODI decomposition and appendix posterior intervals
     artifacts:
       - artifacts/odi/facet_decomposition.csv
@@ -119,10 +97,24 @@ correspondence:
     artifacts:
       - artifacts/paper/mixed_modality_cells.csv
       - artifacts/paper/screened_panel_values.json
+      - artifacts/diagnostics/llm_judge_validation.csv
+  - paper_element: Appendix LLM-judge validation and mechanism diagnostics
+    artifacts:
+      - artifacts/diagnostics/llm_judge_validation.csv
+      - artifacts/diagnostics/calibration_mechanism_summary.csv
+  - paper_element: Appendix additional facets and tool-description null/stress cells
+    artifacts:
+      - artifacts/paper/additional_facet_results.csv
+      - configs/facets.yaml
+      - configs/datasets.yaml
   - paper_element: Appendix robustness and decoder-noise decomposition
     artifacts:
       - artifacts/robustness/decoder_decomp_screened_by_facet.csv
       - artifacts/robustness/decoder_decomp_screened.json
+      - artifacts/provenance/decoder_decomp_screened_audit.md
+  - paper_element: Main Q6 confidence calibration summary
+    artifacts:
+      - artifacts/diagnostics/calibration_mechanism_summary.csv
       - artifacts/provenance/decoder_decomp_screened_audit.md
   - paper_element: Main Table 4 and appendix mitigation cost-Pareto results
     artifacts:
@@ -138,9 +130,8 @@ correspondence:
       - artifacts/provenance/cta_think_budget_summary.md
 
 excluded_by_design:
-  - upstream dataset text, images, tables, and prompts
+  - upstream dataset text, images, and tables
   - provider credentials and local caches
-  - raw 78GB internal experiment tree
+  - raw provider-output run tree
   - multi-gigabyte NumPyro posterior traces and pickle multitraces
-
-materializer: scripts/materialize_release_artifacts.py
+  - per-item judge labels, judge prompts, and calibration-dialog transcripts

@@ -12,6 +12,7 @@ Please star this repo if you find it useful, open an issue if something is uncle
 <p align="center">
 <a href="#install">Install</a> |
 <a href="#quick-start">Quick Start</a> |
+<a href="#python-library-usage">Python API</a> |
 <a href="#paper-artifacts">Artifacts</a> |
 <a href="#reproducing-the-release">Reproduction</a> |
 <a href="#release-checklist">Checklist</a> |
@@ -37,9 +38,9 @@ original sources under their licenses and terms.
 - `src/facet_probe/`: permutation, scoring, metrics, manifest, provider-env, artifact, and dataset-registry code.
 - `configs/`: dataset, model, facet, ordering, and release-artifact manifests.
 - `artifacts/`: sanitized aggregate tables, compact ODI outputs, robustness, mitigation, screens, and provenance notes.
-- `scripts/materialize_release_artifacts.py`: deterministic materializer from the private paper workspace.
-- `scripts/audit_release.py`: release audit for manifest coverage, artifact regeneration, arXiv-source grounding, sanitization, and secret scans.
+- `scripts/audit_release.py`: offline release audit for manifest coverage, artifact consistency, sanitization, and secret scans.
 - `examples/toy_items.jsonl`: minimal canonical item file for trying bulk manifest generation.
+- `examples/python_library_usage.py`: minimal import-based Python API example.
 - `tests/`: unit tests for the public contracts.
 
 ## Install
@@ -90,6 +91,36 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
 ```
+
+Install directly from a public Git tag:
+
+```bash
+python -m pip install "facet-probe @ git+https://github.com/yahskapar/facet-probe.git@v0.0.1"
+uv pip install "facet-probe @ git+https://github.com/yahskapar/facet-probe.git@v0.0.1"
+```
+
+For conda users, activate the conda environment first and then run the
+`python -m pip install ...` command inside it.
+
+After a PyPI release, installation becomes:
+
+```bash
+python -m pip install facet-probe
+uv pip install facet-probe
+```
+
+Maintainers can publish a package-index release by building wheel/sdist
+artifacts from this repo and uploading them to PyPI, preferably first to
+TestPyPI:
+
+```bash
+python -m build
+python -m twine upload dist/*
+```
+
+`uv build` is also suitable for building the local package artifacts. A conda
+package is a separate conda-forge-style release path and is not required for
+people to install Facet-Probe inside conda environments.
 
 ## Quick Start
 
@@ -147,14 +178,47 @@ facet-probe make-report examples/toy_trials.jsonl --output-dir /tmp/toy_report
 Trial JSONL rows should contain fields such as `facet`, `dataset`, `model`,
 `item_id`, `ordering_idx`, `answer_normalized`, and `correct`.
 
+## Python Library Usage
+
+Use Facet-Probe directly from Python when building dataset or model adapters:
+
+```python
+import facet_probe as fp
+
+items = [
+    fp.mcq_audit_item(
+        {
+            "id": "001",
+            "question": "Which option is the target color?",
+            "choices": ["red", "blue", "green", "yellow"],
+            "answer": "2",
+        },
+        dataset="toy_mcq",
+    )
+]
+
+fp.validate_audit_items(items, facet="option_order")
+manifest = fp.trial_manifest_rows(items, facet="option_order", k=6, seed=42)
+```
+
+Run the complete minimal example:
+
+```bash
+python examples/python_library_usage.py
+```
+
 ## Paper Artifacts
 
 High-signal release artifacts live under `artifacts/`:
 
 - `artifacts/paper/per_facet_per_model.csv`: Table 1 values, including screened image-set and mixed-modality sem-flip.
 - `artifacts/paper/panel_means.csv`: panel means for the 5 main facets.
+- `artifacts/paper/capability_summary.csv`: Figure 1 capability/scaling summary values.
+- `artifacts/paper/additional_facet_results.csv`: appendix demoted-facet and tool-description null/stress summary values.
 - `artifacts/odi/facet_decomposition.csv`: Table 2 screened modal-outcome ODI facet decomposition.
 - `artifacts/odi/posterior_intervals.csv`: appendix ODI posterior interval summaries.
+- `artifacts/diagnostics/calibration_mechanism_summary.csv`: compact Q6 calibration and mechanism-classification values.
+- `artifacts/diagnostics/llm_judge_validation.csv`: compact LLM-judge validation values.
 - `artifacts/robustness/decoder_decomp_screened_by_facet.csv`: screened decoder-noise vs ordering decomposition.
 - `artifacts/mitigation/policy_means.csv`: Table 4 screened mitigation cost-Pareto policy means.
 - `artifacts/mitigation/cta_flip_summary.csv`: Figure 4 CTA baseline-vs-intervention cells.
@@ -177,19 +241,24 @@ python scripts/audit_release.py --offline-only
 python -m pytest
 ```
 
-For authors or reviewers with the full local `EMNLP_2026` paper workspace:
+To cross-check the release against the public arXiv source bundle:
 
 ```bash
-python scripts/materialize_release_artifacts.py --source-root ../
-python scripts/audit_release.py --source-root ../ \
-  --arxiv-zip ../arxiv_latest_post_finalization/_EMNLP_2026__Same_Evidence__Different_Answer__Auditing_Order_Sensitivity_in_Multimodal_Large_Language_Models.zip
+python scripts/audit_release.py --arxiv-zip path/to/arxiv_source.zip
 ```
 
-The release audit checks that all shipped artifacts are manifest-listed, all
-materialized artifacts regenerate byte-for-byte from the paper workspace when
-`--source-root` is supplied, the latest arXiv source contains the expected
-quantitative sections when `--arxiv-zip` is supplied, sanitized screens omit
-upstream dataset content, and no obvious credentials appear in text files.
+The public release is self-contained for the shipped artifact claims: it
+includes the compact tables, screen summaries, ODI summaries, provenance notes,
+configs, and verification code needed to inspect the arXiv aggregate results.
+It intentionally does not require a private parent workspace. Full raw reruns
+still require upstream datasets and model/API access under their original terms,
+so raw provider outputs and upstream content are listed as future expanded
+artifacts rather than redistributed in `v0.0.1`.
+
+The release audit checks that all shipped artifacts are manifest-listed, compact
+numeric artifacts match expected paper values, sanitized screens omit upstream
+dataset content, setup commands are documented, and no obvious credentials
+appear in text files.
 
 Provider credentials are read only from environment variables. Start from
 `.env.example` and never commit a filled `.env` file.
@@ -200,26 +269,9 @@ This checklist tracks the public release state and the most useful follow-on
 milestones.
 
 - [x] `v0.0.1` initial public code and evaluation artifacts release.
-  Includes the cleaned Python package, Apache-2.0 licensing, conda and uv setup
-  paths, sanitized paper artifacts, provenance notes, release audits, Figure 4
-  CTA/think-budget summaries, HuggingFace metadata inspection, normalized item
-  validation, and evaluation-report helpers. Verified locally with
-  `python -m pytest`, `ruff check .`, `facet-probe verify-artifacts`, offline
-  and source-grounded release audits, setup dry-runs, package-build smoke test,
-  and placeholder/secret scans.
-- [ ] Add dataset adapter templates for common dataset types and more
-  model-adapter examples.
-  Prioritize MCQ, evidence-list, image-list, and mixed-modality dataset
-  templates, plus one closed-source provider example and one local/open-weight
-  HuggingFace model example.
-- [ ] Publicly release expanded evaluation artifacts.
-  Candidate artifacts include full permutation manifests, normalized trial
-  outputs, and other higher-granularity evaluation files after provider,
-  license, storage, and redistribution review.
+- [ ] Add production dataset loaders and more model-adapter examples.
+- [ ] Publicly release expanded evaluation artifacts: full permutation manifests, normalized trial outputs, aggregation scripts, prompt templates, judge outputs, and per-cell diagnostic tables.
 - [ ] Update and release the full `v1.0.0` version of Facet-Probe.
-  This should include the stable public API, expanded adapters/artifacts that
-  pass review, public CI or equivalent automated checks, a versioned release,
-  and archival citation metadata.
 
 ## Method Notes
 
@@ -255,9 +307,12 @@ provide conservative facet suggestions from HuggingFace dataset metadata,
 recursive feature schemas, and sample row shapes. `facet-probe validate-items`
 checks normalized `AuditItem` JSONL before inference, and
 `facet-probe make-manifest` turns those items into trial manifests for
-provider-specific or local-model adapters. See
+provider-specific or local-model adapters. `facet_probe.templates` provides
+starter adapters for common MCQ, evidence-list, image-list, and mixed-modality
+row shapes. See
 `docs/huggingface_autodiscovery.md` for the feasibility and limits of consuming
-arbitrary HuggingFace dataset URLs.
+arbitrary HuggingFace dataset URLs, and `docs/adapter_templates.md` for
+template examples.
 
 Closed-source model adapters should use environment variables such as
 `GOOGLE_API_KEY`, `OPENAI_API_KEY`, and `ANTHROPIC_API_KEY`; open-weight
@@ -267,11 +322,11 @@ kwargs, and access date.
 ## Citation
 
 ```bibtex
-@misc{paruchuri2026same,
-  title = {Same Evidence, Different Answer: Auditing Order Sensitivity in Multimodal Large Language Models},
-  author = {Paruchuri, Akshay and Koyejo, Sanmi and Adeli, Ehsan},
-  year = {2026},
-  note = {arXiv preprint. Code and artifacts: https://github.com/yahskapar/facet-probe}
+@article{paruchuri2026same,
+  title={Same Evidence, Different Answer: Auditing Order Sensitivity in Multimodal Large Language Models},
+  author={Paruchuri, Akshay and Koyejo, Sanmi and Adeli, Ehsan},
+  journal={arXiv preprint arXiv:2606.26079},
+  year={2026}
 }
 ```
 

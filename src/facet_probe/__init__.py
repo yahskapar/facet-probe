@@ -8,6 +8,14 @@ from facet_probe.providers import ProviderSpec, provider_env_status
 from facet_probe.reports import build_evaluation_report, write_evaluation_report
 from facet_probe.schema import AuditItem, Component, TrialRecord
 from facet_probe.scoring import normalize_answer, parse_answer_letter, score_answer
+from facet_probe.templates import (
+    content_ref,
+    evidence_list_audit_item,
+    image_list_audit_item,
+    mcq_audit_item,
+    mixed_modality_audit_item,
+    render_ordered_text_prompt,
+)
 from facet_probe.validation import ValidationReport, validate_audit_items
 
 __all__ = [
@@ -18,14 +26,21 @@ __all__ = [
     "ProviderSpec",
     "TrialRecord",
     "ValidationReport",
+    "__version__",
     "audit_records",
     "audit_item_from_mapping",
     "build_evaluation_report",
     "build_hf_inspection",
+    "content_ref",
+    "evidence_list_audit_item",
     "get_facet",
+    "image_list_audit_item",
     "item_metrics",
+    "mcq_audit_item",
+    "mixed_modality_audit_item",
     "normalize_answer",
     "parse_answer_letter",
+    "render_ordered_text_prompt",
     "sample_permutations",
     "score_answer",
     "summarize_groups",

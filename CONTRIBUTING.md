@@ -7,7 +7,8 @@ Thanks for helping improve Facet-Probe.
 ```bash
 bash setup.sh uv
 source .venv/bin/activate
-pytest
+python -m ruff check .
+python -m pytest
 facet-probe verify-artifacts
 ```
 
@@ -18,10 +19,12 @@ bash setup.sh conda
 conda activate facet-probe
 ```
 
-When the local paper workspace is available, also run:
+When checking paper correspondence, run the source-grounded audit against an
+arXiv source ZIP or extracted source directory:
 
 ```bash
-python scripts/audit_release.py --source-root /path/to/EMNLP_2026 --arxiv-zip /path/to/paper.zip
+python scripts/audit_release.py --arxiv-zip path/to/arxiv_source.zip
+python scripts/audit_release.py --arxiv-source path/to/extracted/arxiv_source
 ```
 
 ## Pull Requests
@@ -33,7 +36,7 @@ Please keep changes scoped and include tests for:
 - metric aggregation changes,
 - manifest generation changes,
 - provider environment checks,
-- artifact materialization changes.
+- artifact manifest or release-audit changes.
 
 Do not add upstream dataset text, images, prompts, API keys, local caches, or raw provider logs to the repo. Use stable IDs and derived/sanitized artifacts instead.
 

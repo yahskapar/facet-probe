@@ -838,8 +838,8 @@
     }
   ],
   "sources": {
-    "per_item": "EMNLP_2026/MMIOS/results/experiments/mitigation_menu_n200_2026-05-11_23-15-45/per_item_oracle_bounds.parquet",
-    "screen": "EMNLP_2026/MMIOS/data/screens/imageset_position_reference_screen.json"
+    "per_item": "not_released_in_v0.0.1",
+    "screen": "not_released_in_v0.0.1"
   },
   "text_mcq_k2_recall_max": 0.8,
   "text_mcq_k2_recall_min": 0.4666666666666667

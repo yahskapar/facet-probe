@@ -28,40 +28,33 @@ python -m pytest
 
 This checks panel means and key ODI ratios against the shipped CSV/JSON artifacts.
 
-For public clones without the private paper workspace, run the offline subset:
+Run the public release audit:
 
 ```bash
 python scripts/audit_release.py --offline-only
 ```
 
-When the full `EMNLP_2026` paper workspace and latest arXiv source ZIP are
-available, run the complete source-grounded audit:
+To also verify the compact public artifacts against the public arXiv source
+bundle, pass the source ZIP or its extracted directory:
 
 ```bash
-python scripts/audit_release.py \
-  --source-root /path/to/EMNLP_2026 \
-  --arxiv-zip /path/to/arxiv_latest_post_finalization/paper.zip
+python scripts/audit_release.py --arxiv-zip path/to/arxiv_source.zip
+python scripts/audit_release.py --arxiv-source path/to/extracted/arxiv_source
 ```
 
-This verifies artifact manifest coverage, byte-for-byte regeneration from the
-paper workspace, arXiv source-section grounding, arXiv table/figure-to-artifact
-numeric alignment, sanitized screen boundaries, and absence of obvious
-credentials in text files.
+This verifies artifact manifest coverage, paper-value consistency for compact
+numeric artifacts, sanitized screen boundaries, conda/uv setup documentation,
+and absence of obvious credentials in text files.
 
 Use `artifacts/reproducibility_matrix.md` to trace each paper table, figure, or
 appendix result family to the public artifact files and verification command.
 
-## Recreate Release Artifacts From the Paper Workspace
-
-If you have the full `EMNLP_2026` workspace next to this repo:
-
-```bash
-python scripts/materialize_release_artifacts.py --source-root ../
-```
-
-Use `--source-root /path/to/EMNLP_2026` when the paper workspace is elsewhere.
-Use `--output-root /tmp/facet-probe-check` to materialize into a temporary
-directory for comparison without touching the working tree.
+The `v0.0.1` release is self-contained for the shipped aggregate claims. It
+does not redistribute upstream dataset content, raw provider outputs, API
+caches, or multi-gigabyte posterior traces. Those objects are omitted because
+they are large, provider-sensitive, or governed by upstream dataset licenses;
+the public artifacts include the compact values and checks needed to audit the
+paper tables and figures without unreleased raw run outputs.
 
 ## Generate Trial Manifests
 

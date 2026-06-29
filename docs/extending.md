@@ -32,6 +32,10 @@ set from dataset-card metadata, recursive feature names, declared modalities,
 task categories, and sample row shapes. Treat the suggestion as a review aid,
 not as proof that the dataset is ready to run.
 
+Use the adapter templates in `facet_probe.templates` for common MCQ,
+evidence-list, image-list, and mixed-modality row shapes. See
+`docs/adapter_templates.md` for examples.
+
 Validate the normalized items before inference:
 
 ```bash

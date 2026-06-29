@@ -1,0 +1,14 @@
+result_family,metric,subset,value,unit,n,notes
+calibration,mismatch_min,Claude Opus 4.7,8.8,percentage_points,7 models,MedXpertQA 4-turn confidence protocol
+calibration,mismatch_max,ChatGPT 5.4-mini,62.1,percentage_points,7 models,MedXpertQA 4-turn confidence protocol
+calibration,spearman_theta_vs_mismatch,all_tested_models,-0.57,rho,7 models,descriptive correlation against theta_correct
+mechanism,mechanism_sample_size,all_source_dataset_cells,225,items,5 source-dataset cells,cross-ordering-flipped items sampled up to N=50 per cell
+mechanism,primary_content_rationalization_non_dialog_categorical,MathVision; MedXpertQA; MMLU-Pro,58,percent,126 items,primary Gemini-Pro judge share
+mechanism,mantis_prescreen_primary_content_rationalization,Mantis-Eval prescreen,80,percent,49 items,exploratory because sampled before position-reference screen
+mechanism,mantis_prescreen_claude_content_rationalization,Mantis-Eval prescreen,98,percent,49 items,cross-family judge share
+mechanism,mantis_prescreen_chatgpt_content_rationalization,Mantis-Eval prescreen,55,percent,49 items,cross-family judge share
+mechanism,fleiss_kappa_6_class,all_three_judges,0.28,kappa,225 items,raw six-class taxonomy
+mechanism,fleiss_kappa_3_class,all_three_judges,0.30,kappa,225 items,reasoning-instability / anchoring / other collapse
+mechanism,aggregate_reasoning_instability_3_class,all_items_all_judges,59,percent,225 items x 3 judges,95 percent bootstrap CI 52-64
+mechanism,aggregate_positional_anchoring_3_class,all_items_all_judges,18,percent,225 items x 3 judges,95 percent bootstrap CI 14-23
+mechanism,aggregate_other_modes_3_class,all_items_all_judges,24,percent,225 items x 3 judges,95 percent bootstrap CI 19-30

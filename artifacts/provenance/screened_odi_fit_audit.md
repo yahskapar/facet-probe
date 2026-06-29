@@ -4,9 +4,9 @@ Date: 2026-06-23
 
 ## Inputs
 
-- Modal fit: `EMNLP_2026/MMIOS/results/experiments/irt_v6_screened5_modal_2026-06-23_04-42-33_2026-06-23_04-42-34/`
-- Correct fit: `EMNLP_2026/MMIOS/results/experiments/irt_v6_screened5_correct_2026-06-23_04-42-33_2026-06-23_04-42-37/`
-- Screen: `EMNLP_2026/MMIOS/data/screens/imageset_position_reference_screen.json`
+- Modal fit summaries: `artifacts/odi/irt_v4_modal_*`.
+- Correct fit summaries: `artifacts/odi/irt_v4_correct_*`.
+- Public screen: `artifacts/screens/imageset_position_reference_screen.csv`.
 
 Both fits used the D1 image-set screen: drop `classification == exclude`, keep
 `keep` + `borderline`. The fit metadata reports Mantis-Eval 52/70 excluded and
@@ -54,8 +54,8 @@ do not describe the whole correct fit as clean.
 
 ## Capability Correlations
 
-Using `derived/screened_panel_values.json` 5-facet means and the screened
-correct-outcome `theta`:
+Using `artifacts/paper/screened_panel_values.json` 5-facet means and the
+screened correct-outcome `theta`:
 
 - Full 18-model panel: Spearman `rho=-0.946`.
 - Frontier six-model cluster: Spearman `rho=-0.886`.

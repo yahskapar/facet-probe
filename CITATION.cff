@@ -1,6 +1,6 @@
 cff-version: 1.2.0
-message: "If you use Facet-Probe, please cite the paper and this repository."
-title: "Same Evidence, Different Answer: Auditing Order Sensitivity in Multimodal Large Language Models"
+message: "If you use Facet-Probe, please cite the paper."
+title: "Facet-Probe"
 authors:
   - family-names: Paruchuri
     given-names: Akshay
@@ -9,5 +9,19 @@ authors:
   - family-names: Adeli
     given-names: Ehsan
 year: 2026
+version: "0.0.1"
 repository-code: "https://github.com/yahskapar/facet-probe"
 license: Apache-2.0
+preferred-citation:
+  type: article
+  title: "Same Evidence, Different Answer: Auditing Order Sensitivity in Multimodal Large Language Models"
+  authors:
+    - family-names: Paruchuri
+      given-names: Akshay
+    - family-names: Koyejo
+      given-names: Sanmi
+    - family-names: Adeli
+      given-names: Ehsan
+  journal: "arXiv preprint arXiv:2606.26079"
+  year: 2026
+  url: "https://arxiv.org/abs/2606.26079"

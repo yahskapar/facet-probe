@@ -4,8 +4,11 @@ Date: 2026-06-24
 
 Paper target: arXiv appendix ODI methodology section.
 
-Source artifact:
-`MMIOS/results/experiments/irt_v6_screened5_modal_2026-06-23_04-42-33_2026-06-23_04-42-34/irt_v4_modal_idata.nc`
+Public artifacts:
+`artifacts/odi/posterior_intervals.csv` and
+`artifacts/odi/irt_v4_modal_per_item_params.parquet`.
+
+The full posterior trace file is intentionally not shipped in `v0.0.1`.
 
 Purpose: support the arXiv appendix statement that ODI posterior
 uncertainty is reported off-figure, rather than adding error bars to

@@ -1,0 +1,10 @@
+judge_instrument,metric,subset,value,unit,n,notes
+dialog_rescore,inter_judge_cohen_kappa,dialog-turn semantic rescore,0.38,kappa,,Qwen3-VL-8B-Instruct and Gemini 2.5 Flash Lite
+dialog_rescore,per_stratum_ari,dialog-turn semantic rescore,0.53,ari,,reported as measurement caveat
+mechanism_classification,fleiss_kappa_3_class,reasoning-instability anchoring other,0.30,kappa,225 items x 3 judges,fair agreement on collapsed taxonomy
+mixed_modality_semflip,cohen_kappa,ChatGPT-output cells,0.81,kappa,,primary Gemini Pro vs secondary judge
+mixed_modality_semflip,cohen_kappa,Gemini-output cells,0.73,kappa,,cross-vendor validation
+mixed_modality_semflip,cohen_kappa,Claude-output cells,0.59,kappa,,moderate agreement with prevalence-paradox caveat
+mixed_modality_mmqa_anchor,n_items,MMQA short-factoid gold subset,181,items,,judge-free gold-anchor cross-check
+mixed_modality_mmqa_anchor,semflip_minus_gold_anchor_min,Gemini MMQA temperature sweep,4.8,percentage_points,Pro/Flash T in {0,0.7,1.0},sem-flip exceeds gold-anchor flip
+mixed_modality_mmqa_anchor,semflip_minus_gold_anchor_max,Gemini MMQA temperature sweep,11.1,percentage_points,Pro/Flash T in {0,0.7,1.0},sem-flip exceeds gold-anchor flip
