@@ -59,8 +59,11 @@ analysis = [
   "pyarrow>=15",
 ]
 irt = [
+  "cloudpickle>=3.0",
+  "numpy>=1.26",
   "jax>=0.4",
   "numpyro>=0.15",
+  "pymc>=5.15",
   "arviz>=0.17",
   "xarray>=2024.1",
   "h5netcdf>=1.3",

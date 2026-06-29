@@ -28,6 +28,18 @@ python -m pytest
 
 This checks panel means and key ODI ratios against the shipped CSV/JSON artifacts.
 
+The released ODI/IRT summaries can also be materialized from either a checkout
+or an installed wheel:
+
+```bash
+facet-probe irt-summary --output-dir reports/released_irt
+```
+
+This writes `released_irt_summary.json`, theta CSVs, diagnostics, and copies of
+the compact `artifacts/odi/` files used for the Table 2 modal-outcome ODI
+decomposition, capability theta summaries, and appendix posterior interval
+checks.
+
 Run the public release audit:
 
 ```bash
@@ -110,6 +122,53 @@ facet-probe audit-jsonl trials.jsonl --group-csv group_summary.csv
 For `option_order`, normalize model letters to source option indices before
 writing `answer_normalized`, or use
 `facet_probe.scoring.normalize_answer("option_content_idx", raw, ...)`.
+
+## Export IRT/ODI Inputs
+
+The default run artifacts are flip/OSI/report outputs. To prepare a completed
+trial JSONL for paper-style ODI/IRT analysis, export long-form modal and correct
+Bernoulli outcome rows:
+
+```bash
+facet-probe irt-export runs/qwen-paper/trials.jsonl \
+  --output-dir runs/qwen-paper/irt_input
+```
+
+The output directory contains `irt_input_trials.csv`,
+`irt_input_trials.jsonl`, `irt_input_groups.csv`, and
+`irt_input_summary.json`. The modal outcome is 1 when a trial answer matches
+that model/item's untied modal answer across orderings; tied modal-answer item
+groups are omitted from the modal export. The correct outcome is 1 when a
+non-missing correctness label is true.
+
+Then fit the public Bayesian 2PL ODI/IRT model:
+
+```bash
+facet-probe irt-fit runs/qwen-paper/irt_input/irt_input_trials.csv \
+  --outcome modal \
+  --output-dir runs/qwen-paper/irt_fit_modal
+```
+
+For a paper-scale fit, install the `irt` optional extra and use the paper-style
+sampling settings:
+
+```bash
+bash setup.sh uv --extras dev,hf,analysis,irt
+facet-probe irt-fit runs/qwen-paper/irt_input/irt_input_trials.csv \
+  --outcome modal \
+  --n-chains 4 \
+  --n-draws 1500 \
+  --n-tune 1500 \
+  --target-accept 0.95 \
+  --nuts-sampler numpyro \
+  --output-dir runs/qwen-paper/irt_fit_modal
+```
+
+The fit writes compact per-item parameters, per-facet decomposition CSV/JSON,
+theta summaries, diagnostics, and `irt_fit_summary.json`. Use `--dry-run` to
+validate and summarize inputs before sampling, and add `--save-idata` only when
+you need the full ArviZ NetCDF trace. The public fitting workflow may be
+optimized further after `v0.0.1`.
 
 ## Paper-Profile Reruns
 

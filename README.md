@@ -132,18 +132,20 @@ facet-probe paper-run --output-dir runs/full-paper --prepare-only
 Each executed run directory contains `run_profile.json`, `provider_status.json`,
 `models.jsonl`, `datasets.jsonl`, `manifest.jsonl`, `trials.jsonl`,
 `summary.json`, `group_summary.csv`, `run_status.json`, and `report/`.
-The command also prints a compact JSON summary to the terminal. Use
-`--prepare-only` when you only want the reproducible run profile and do not want
-to load datasets or call a model yet. Full paper-profile runs are strict by
-default: if a dataset/facet cannot reach its configured audited item count, the
-command fails instead of reporting a partial run as complete. Use
-`--allow-partial` only for development/debugging. Paper-profile execution uses
-dataset-specific loaders for the configured paper datasets; arbitrary added
-HuggingFace datasets use the generic adapter templates unless you add a custom
-loader. HuggingFace datasets stream by default where supported; use
-`--no-streaming` when you intentionally want normal cached dataset loading.
-File/archive-backed public assets for mixed-modality datasets may still require
-large upstream downloads.
+The command also prints a compact JSON summary to the terminal. These files give
+you the direct run-level audit results: flip rate, OSI, macro accuracy when gold
+labels are available, item metrics, and grouped summaries. The command does not
+silently run a Bayesian ODI/IRT posterior fit. Use `--prepare-only` when you only
+want the reproducible run profile and do not want to load datasets or call a
+model yet. Full paper-profile runs are strict by default: if a dataset/facet
+cannot reach its configured audited item count, the command fails instead of
+reporting a partial run as complete. Use `--allow-partial` only for
+development/debugging. Paper-profile execution uses dataset-specific loaders for
+the configured paper datasets; arbitrary added HuggingFace datasets use the
+generic adapter templates unless you add a custom loader. HuggingFace datasets
+stream by default where supported; use `--no-streaming` when you intentionally
+want normal cached dataset loading. File/archive-backed public assets for
+mixed-modality datasets may still require large upstream downloads.
 
 Run generation and the paper-style mixed-modality semantic judge in one command:
 
@@ -169,6 +171,54 @@ Gemini-Pro with `GOOGLE_API_KEY`. The input trial file must contain
 `mixed_modality_order` rows. To run a cross-vendor judge instead, use
 `--judge mixed-semantic-cross-vendor-openai` with `OPENAI_API_KEY`, or override
 the config with `--provider`, `--api-model`, and `--api-key-env`.
+
+Inspect the released paper ODI/IRT artifacts from the installed package:
+
+```bash
+facet-probe irt-summary --output-dir reports/released_irt
+```
+
+This writes a compact summary bundle, theta CSVs, diagnostics, and copies of the
+released ODI artifacts, including the Table 2 modal-outcome facet decomposition
+and appendix posterior intervals.
+
+Export a completed run to modal/correct outcome rows for ODI/IRT-style analysis:
+
+```bash
+facet-probe irt-export runs/qwen-paper/trials.jsonl \
+  --output-dir runs/qwen-paper/irt_input
+```
+
+This creates `irt_input_trials.csv`, `irt_input_trials.jsonl`,
+`irt_input_groups.csv`, and `irt_input_summary.json`.
+
+Fit the public Bayesian ODI/IRT model over those exported rows:
+
+```bash
+facet-probe irt-fit runs/qwen-paper/irt_input/irt_input_trials.csv \
+  --outcome modal \
+  --output-dir runs/qwen-paper/irt_fit_modal
+```
+
+For a paper-scale run, install the `irt` extra and expect this to be a heavier
+posterior-sampling job:
+
+```bash
+bash setup.sh uv --extras dev,hf,analysis,irt
+facet-probe irt-fit runs/qwen-paper/irt_input/irt_input_trials.csv \
+  --outcome modal \
+  --n-chains 4 \
+  --n-draws 1500 \
+  --n-tune 1500 \
+  --target-accept 0.95 \
+  --nuts-sampler numpyro \
+  --output-dir runs/qwen-paper/irt_fit_modal
+```
+
+The fit writes compact per-item parameters, per-facet decomposition CSV/JSON,
+theta summaries, diagnostics, and `irt_fit_summary.json`. Add `--save-idata`
+only when you also want the full ArviZ NetCDF trace. The public fit
+implementation may be further optimized in future releases.
 
 Use the same profile from Python:
 
@@ -300,7 +350,7 @@ bash setup.sh conda --extras dev,hf,analysis
 ```
 
 Use `dev,hf,analysis,irt` only if you plan to refit the Bayesian ODI model
-locally.
+locally with `facet-probe irt-fit`.
 
 Manual pip fallback:
 
@@ -444,6 +494,8 @@ High-signal release artifacts live under `artifacts/`:
 - `artifacts/paper/additional_facet_results.csv`: appendix demoted-facet and tool-description null/stress summary values.
 - `artifacts/odi/facet_decomposition.csv`: Table 2 screened modal-outcome ODI facet decomposition.
 - `artifacts/odi/posterior_intervals.csv`: appendix ODI posterior interval summaries.
+- `artifacts/odi/*theta.json`: modal/correct model ability summaries used by IRT analyses.
+- `artifacts/odi/*per_item_params.parquet`: compact per-item posterior parameter summaries.
 - `artifacts/diagnostics/calibration_mechanism_summary.csv`: compact Q6 calibration and mechanism-classification values.
 - `artifacts/diagnostics/llm_judge_validation.csv`: compact LLM-judge validation values.
 - `artifacts/robustness/decoder_decomp_screened_by_facet.csv`: screened decoder-noise vs ordering decomposition.
@@ -510,6 +562,14 @@ LLM-judge/semantic-flip summaries described in the paper and
 `docs/artifacts.md`. The public runner can generate new mixed-modality
 judgments with `facet-probe judge-mixed` or `paper-run --judge-mixed`. The
 historical full judged raw-output release remains a planned expanded artifact.
+
+For ODI/IRT, the main paper decomposition uses the modal outcome: a trial is 1
+when its normalized answer matches that model/item's untied modal answer across
+orderings. Correct-outcome theta summaries are included for ability and
+capability analyses. `facet-probe irt-summary` exposes the released paper
+outputs, and `facet-probe irt-export` creates modal/correct outcome rows from a
+new trial JSONL file. `facet-probe irt-fit` fits the public Bayesian ODI/IRT
+model over those exported rows.
 
 ## Extending Facet-Probe
 

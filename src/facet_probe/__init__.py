@@ -2,6 +2,14 @@
 
 from facet_probe.facets import FacetSpec, get_facet, sample_permutations
 from facet_probe.hf_inspect import HFInspection, build_hf_inspection
+from facet_probe.irt import (
+    load_irt_input_rows,
+    released_irt_summary,
+    trial_records_to_irt_rows,
+    write_irt_fit,
+    write_irt_input,
+    write_released_irt_summary,
+)
 from facet_probe.judging import judge_mixed_trials, parse_judge_response
 from facet_probe.manifests import audit_item_from_mapping, trial_manifest_rows
 from facet_probe.metrics import audit_records, item_metrics, summarize_groups
@@ -70,6 +78,7 @@ __all__ = [
     "item_metrics",
     "judge_mixed_trials",
     "judge_profile",
+    "load_irt_input_rows",
     "load_runtime_examples",
     "mcq_audit_item",
     "mixed_modality_audit_item",
@@ -80,13 +89,18 @@ __all__ = [
     "parse_judge_response",
     "parse_answer_letter",
     "render_ordered_text_prompt",
+    "released_irt_summary",
     "sample_permutations",
     "score_answer",
     "summarize_groups",
+    "trial_records_to_irt_rows",
     "provider_env_status",
     "trial_manifest_rows",
     "validate_audit_items",
     "write_evaluation_report",
+    "write_irt_fit",
+    "write_irt_input",
+    "write_released_irt_summary",
 ]
 
 __version__ = "0.0.1"

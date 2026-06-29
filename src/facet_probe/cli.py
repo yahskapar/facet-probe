@@ -14,6 +14,12 @@ from facet_probe.artifacts import verify_release_artifacts
 from facet_probe.datasets import list_paper_datasets
 from facet_probe.facets import FACETS, get_facet, sample_permutations
 from facet_probe.hf_inspect import inspect_hf_dataset
+from facet_probe.irt import (
+    released_irt_summary,
+    write_irt_fit,
+    write_irt_input,
+    write_released_irt_summary,
+)
 from facet_probe.judging import judge_mixed_trials
 from facet_probe.manifests import trial_manifest_rows
 from facet_probe.metrics import audit_records, read_jsonl, summarize_groups, write_csv, write_json
@@ -121,6 +127,43 @@ def _cmd_verify_artifacts(_args: argparse.Namespace) -> int:
         status = "PASS" if check.ok else "FAIL"
         print(f"{status}\t{check.name}\t{check.detail}")
     return 0 if all(check.ok for check in checks) else 1
+
+
+def _cmd_irt_summary(args: argparse.Namespace) -> int:
+    if args.output_dir:
+        status = write_released_irt_summary(args.output_dir)
+        print(json.dumps(status, indent=2, sort_keys=True))
+        return 0
+    print(json.dumps(released_irt_summary(), indent=2, sort_keys=True))
+    return 0
+
+
+def _cmd_irt_export(args: argparse.Namespace) -> int:
+    records = read_jsonl(args.trials_jsonl)
+    status = write_irt_input(records, args.output_dir, outcomes=tuple(args.outcomes))
+    print(json.dumps(status, indent=2, sort_keys=True))
+    return 0
+
+
+def _cmd_irt_fit(args: argparse.Namespace) -> int:
+    status = write_irt_fit(
+        args.irt_input,
+        args.output_dir,
+        outcome=args.outcome,
+        n_chains=args.n_chains,
+        n_draws=args.n_draws,
+        n_tune=args.n_tune,
+        target_accept=args.target_accept,
+        nuts_sampler=args.nuts_sampler,
+        chain_method=args.chain_method,
+        seed=args.seed,
+        limit_items_per_facet=args.limit_items_per_facet,
+        dry_run=args.dry_run,
+        save_idata=args.save_idata,
+        progressbar=args.progressbar,
+    )
+    print(json.dumps(status, indent=2, sort_keys=True))
+    return 0
 
 
 def _cmd_inspect_hf(args: argparse.Namespace) -> int:
@@ -355,6 +398,10 @@ def _paper_run_readme(profile: EvaluationProfile) -> str:
             "- `trials.jsonl`: normalized model outputs and scores.",
             "- `summary.json` and `group_summary.csv`: aggregate metrics.",
             "- `report/`: summary, group, item, and manifest report files.",
+            "- `irt_input/`: optional modal/correct outcome export when created",
+            "  with `facet-probe irt-export trials.jsonl --output-dir irt_input`.",
+            "- `irt_fit/`: optional Bayesian ODI/IRT fit outputs when created",
+            "  with `facet-probe irt-fit irt_input/irt_input_trials.csv --output-dir irt_fit`.",
             "- `run_status.json`: counts, output paths, and skipped-row diagnostics.",
             "- `mixed_semantic_judge/`: semantic-equivalence judge outputs when",
             "  `paper-run --judge-mixed` was used.",
@@ -445,6 +492,63 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("verify-artifacts", help="Check included release artifact consistency.")
     p.set_defaults(func=_cmd_verify_artifacts)
+
+    p = sub.add_parser(
+        "irt-summary",
+        help="Inspect or write the released ODI/IRT artifact summary bundle.",
+    )
+    p.add_argument("--output-dir", help="Write summary files and copy compact ODI artifacts.")
+    p.set_defaults(func=_cmd_irt_summary)
+
+    p = sub.add_parser(
+        "irt-export",
+        help="Export trial JSONL to modal/correct IRT-compatible outcome rows.",
+    )
+    p.add_argument("trials_jsonl")
+    p.add_argument("--output-dir", required=True)
+    p.add_argument(
+        "--outcomes",
+        nargs="+",
+        default=["modal", "correct"],
+        choices=["modal", "correct"],
+    )
+    p.set_defaults(func=_cmd_irt_export)
+
+    p = sub.add_parser(
+        "irt-fit",
+        help="Fit the public Bayesian ODI/IRT model from exported outcome rows.",
+    )
+    p.add_argument("irt_input", help="CSV or JSONL produced by `facet-probe irt-export`.")
+    p.add_argument("--output-dir", required=True)
+    p.add_argument("--outcome", default="modal", choices=["modal", "correct", "both"])
+    p.add_argument("--n-chains", type=int, default=4)
+    p.add_argument("--n-draws", type=int, default=1500)
+    p.add_argument("--n-tune", type=int, default=1500)
+    p.add_argument("--target-accept", type=float, default=0.95)
+    p.add_argument("--nuts-sampler", default="numpyro", choices=["numpyro", "pymc", "blackjax"])
+    p.add_argument(
+        "--chain-method",
+        default="parallel",
+        choices=["parallel", "sequential", "vectorized"],
+    )
+    p.add_argument("--seed", type=int, default=42)
+    p.add_argument(
+        "--limit-items-per-facet",
+        type=int,
+        help="Fit only the first N item groups per facet for smoke tests.",
+    )
+    p.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate and summarize fit inputs without importing PyMC or sampling.",
+    )
+    p.add_argument(
+        "--save-idata",
+        action="store_true",
+        help="Also save the full ArviZ InferenceData NetCDF trace.",
+    )
+    p.add_argument("--progressbar", action="store_true", help="Show PyMC sampling progress.")
+    p.set_defaults(func=_cmd_irt_fit)
 
     p = sub.add_parser("inspect-hf", help="Inspect a HuggingFace dataset and suggest facets.")
     p.add_argument("dataset")

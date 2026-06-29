@@ -75,7 +75,40 @@ dataset content.
 - `artifacts/odi/*theta.json`: model ability summaries.
 - `artifacts/odi/*per_item_params.parquet`: compact per-item posterior parameter summaries.
 
-The multi-gigabyte `idata.nc` and `raw_multitrace.pkl` posterior traces are intentionally excluded.
+Run:
+
+```bash
+facet-probe irt-summary --output-dir reports/released_irt
+```
+
+to write a public summary bundle for these files from either a checkout or an
+installed wheel. The main paper decomposition uses the modal outcome, where a
+trial is 1 when its answer matches the untied modal answer for that
+model/item across orderings. Correct-outcome theta summaries are included for
+ability/capability analyses.
+
+To prepare new trial outputs for ODI/IRT-style analysis, run:
+
+```bash
+facet-probe irt-export runs/qwen-paper/trials.jsonl \
+  --output-dir runs/qwen-paper/irt_input
+```
+
+This writes modal/correct Bernoulli outcome rows and grouped summaries. It is
+an input export; run the fit itself with:
+
+```bash
+facet-probe irt-fit runs/qwen-paper/irt_input/irt_input_trials.csv \
+  --outcome modal \
+  --output-dir runs/qwen-paper/irt_fit_modal
+```
+
+The fit command writes compact per-item parameters, per-facet decomposition
+CSV/JSON, theta summaries, diagnostics, and `irt_fit_summary.json`. The
+multi-gigabyte paper `idata.nc` and `raw_multitrace.pkl` posterior traces are
+intentionally excluded; new local traces are saved only when
+`irt-fit --save-idata` is used. The public fitting workflow may be further
+optimized after `v0.0.1`.
 
 ## Robustness and Mitigation
 

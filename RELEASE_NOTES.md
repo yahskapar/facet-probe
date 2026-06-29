@@ -18,6 +18,9 @@
 - Adds profile and runner APIs for using Facet-Probe as a Python library.
 - Adds named mixed-modality semantic judge profiles for the primary Gemini-Pro
   judge and a cross-vendor OpenAI judge.
+- Adds `facet-probe irt-summary` for released ODI/IRT artifact inspection,
+  `facet-probe irt-export` for modal/correct outcome-row exports from new runs,
+  and `facet-probe irt-fit` for the public Bayesian ODI/IRT fit.
 - Packages release configs and compact artifacts in wheels so installed
   CLI/API calls can load the public release profile outside a repo checkout.
 - Adds `scripts/audit_release.py` for manifest coverage, byte-for-byte artifact
