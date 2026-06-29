@@ -6,9 +6,13 @@ import csv
 import json
 from dataclasses import dataclass
 from importlib.resources import files
-from importlib.resources.abc import Traversable
 from pathlib import Path
 from typing import Any
+
+try:
+    from importlib.resources.abc import Traversable
+except ModuleNotFoundError:  # pragma: no cover - Python 3.10 compatibility
+    from importlib.abc import Traversable
 
 ReleasePath = Path | Traversable
 

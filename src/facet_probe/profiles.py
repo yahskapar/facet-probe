@@ -5,7 +5,6 @@ from __future__ import annotations
 import os
 from collections.abc import Sequence
 from dataclasses import asdict, dataclass, field, replace
-from importlib.resources.abc import Traversable
 from pathlib import Path
 from typing import Any
 
@@ -14,6 +13,11 @@ import yaml
 from facet_probe.artifacts import release_data_root
 from facet_probe.hf_inspect import normalize_hf_dataset_id, sanitize_dataset_name
 from facet_probe.providers import get_provider, provider_env_status
+
+try:
+    from importlib.resources.abc import Traversable
+except ModuleNotFoundError:  # pragma: no cover - Python 3.10 compatibility
+    from importlib.abc import Traversable
 
 _MODEL_METADATA_KEYS = {
     "display",
