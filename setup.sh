@@ -24,7 +24,8 @@ Options:
                            Use "base" or "none" for no extras.
                            Common values: dev, dev,hf,analysis,
                            dev,hf,analysis,models,providers,
-                           dev,hf,analysis,irt
+                           dev,hf,analysis,irt,
+                           dev,hf,analysis,models,providers,irt
   --yes, -y               Pass non-interactive yes to conda env creation/update
   --dry-run               Print commands without creating or modifying environments
   --allow-active-conda    Allow uv setup while CONDA_PREFIX is set

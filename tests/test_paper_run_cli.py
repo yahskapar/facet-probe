@@ -37,6 +37,20 @@ def test_paper_run_accepts_arbitrary_hf_model(tmp_path):
     assert (tmp_path / "qwen-paper" / "models.jsonl").exists()
 
 
+def test_public_help_hides_ci_mock_options():
+    paper_help = run_cli("paper-run", "--help")
+    judge_help = run_cli("judge-mixed", "--help")
+    check_env_help = run_cli("check-env", "--help")
+
+    assert paper_help.returncode == 0
+    assert judge_help.returncode == 0
+    assert check_env_help.returncode == 0
+    assert "--mock-model" not in paper_help.stdout
+    assert "--mock-judge" not in judge_help.stdout
+    assert "mock" not in check_env_help.stdout
+    assert "--provider {anthropic,google,huggingface,openai,openai-compatible}" in paper_help.stdout
+
+
 def test_paper_run_accepts_closed_source_model_and_api_key(tmp_path):
     result = run_cli(
         "paper-run",

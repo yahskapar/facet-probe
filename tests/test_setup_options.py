@@ -55,3 +55,25 @@ def test_setup_uv_dry_run_does_not_require_uv():
     assert "uv venv --python 3.11 .venv" in result.stdout
     assert "uv pip install --python" in result.stdout
     assert ".[dev,hf,analysis]" in normalized
+
+
+def test_setup_dry_run_supports_irt_extra():
+    uv_result = run_setup(
+        "uv",
+        "--dry-run",
+        "--extras",
+        "dev,hf,analysis,models,providers,irt",
+    )
+    conda_result = run_setup(
+        "conda",
+        "--dry-run",
+        "--prefix",
+        "/tmp/facet-probe-irt-test-env",
+        "--extras",
+        "dev,hf,analysis,irt",
+    )
+
+    assert uv_result.returncode == 0
+    assert ".[dev,hf,analysis,models,providers,irt]" in uv_result.stdout.replace("\\", "")
+    assert conda_result.returncode == 0
+    assert ".[dev,hf,analysis,irt]" in conda_result.stdout.replace("\\", "")

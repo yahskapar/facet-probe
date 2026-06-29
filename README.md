@@ -73,6 +73,15 @@ bash setup.sh uv --extras dev,hf,analysis,models,providers
 source .venv/bin/activate
 ```
 
+For full Bayesian ODI/IRT fitting with `facet-probe irt-fit`, include the
+heavier `irt` extra in the same install step:
+
+```bash
+bash setup.sh uv --extras dev,hf,analysis,models,providers,irt
+# or
+bash setup.sh conda --extras dev,hf,analysis,models,providers,irt
+```
+
 Commands that reference `examples/`, `configs/`, `artifacts/`, or `scripts/`
 assume you are running from the repository root. Package-only installs still
 include the release configs and compact artifacts, but not the repo examples or
@@ -347,6 +356,8 @@ Install additional optional extras with either setup path:
 ```bash
 bash setup.sh uv --extras dev,hf,analysis
 bash setup.sh conda --extras dev,hf,analysis
+bash setup.sh uv --extras dev,hf,analysis,irt
+bash setup.sh conda --extras dev,hf,analysis,irt
 ```
 
 Use `dev,hf,analysis,irt` only if you plan to refit the Bayesian ODI model

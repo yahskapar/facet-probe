@@ -35,6 +35,8 @@ from facet_probe.reports import write_evaluation_report
 from facet_probe.runner import execute_profile
 from facet_probe.validation import validate_audit_items
 
+_PUBLIC_PROVIDERS = tuple(name for name in sorted(PROVIDERS) if name != "mock")
+
 
 def _cmd_list_facets(_args: argparse.Namespace) -> int:
     for spec in FACETS.values():
@@ -114,7 +116,7 @@ def _cmd_make_report(args: argparse.Namespace) -> int:
 
 
 def _cmd_check_env(args: argparse.Namespace) -> int:
-    names = sorted(PROVIDERS) if "all" in args.providers else args.providers
+    names = list(_PUBLIC_PROVIDERS) if "all" in args.providers else args.providers
     statuses = [provider_env_status(name) for name in names]
     for status in statuses:
         print(json.dumps(status, sort_keys=True))
@@ -487,7 +489,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.set_defaults(func=_cmd_make_report)
 
     p = sub.add_parser("check-env", help="Check provider env vars without printing secret values.")
-    p.add_argument("--providers", nargs="+", default=["all"], choices=["all", *sorted(PROVIDERS)])
+    p.add_argument("--providers", nargs="+", default=["all"], choices=["all", *_PUBLIC_PROVIDERS])
     p.set_defaults(func=_cmd_check_env)
 
     p = sub.add_parser("verify-artifacts", help="Check included release artifact consistency.")
@@ -535,7 +537,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--limit-items-per-facet",
         type=int,
-        help="Fit only the first N item groups per facet for smoke tests.",
+        help="Fit only the first N item groups per facet for quick validation runs.",
     )
     p.add_argument(
         "--dry-run",
@@ -570,9 +572,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--hf-model", action="append", default=[])
     p.add_argument(
         "--mock-model",
-        help="Developer/CI only: use a deterministic local test adapter.",
+        help=argparse.SUPPRESS,
     )
-    p.add_argument("--provider", choices=sorted(PROVIDERS))
+    p.add_argument("--provider", choices=_PUBLIC_PROVIDERS)
     p.add_argument("--api-model")
     p.add_argument("--api-key-env")
     p.add_argument("--endpoint-url")
@@ -588,7 +590,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Named judge profile to use with --judge-mixed.",
     )
     p.add_argument("--judge-output-dir")
-    p.add_argument("--judge-provider", choices=sorted(PROVIDERS))
+    p.add_argument("--judge-provider", choices=_PUBLIC_PROVIDERS)
     p.add_argument("--judge-api-model")
     p.add_argument("--judge-api-key-env")
     p.add_argument("--judge-endpoint-url")
@@ -625,9 +627,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--mock-judge",
         action="store_true",
-        help="Developer/CI only: use a deterministic local judge fixture.",
+        help=argparse.SUPPRESS,
     )
-    p.add_argument("--provider", choices=sorted(PROVIDERS))
+    p.add_argument("--provider", choices=_PUBLIC_PROVIDERS)
     p.add_argument("--api-model")
     p.add_argument("--api-key-env")
     p.add_argument("--endpoint-url")
